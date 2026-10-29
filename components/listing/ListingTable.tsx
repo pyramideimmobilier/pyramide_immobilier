@@ -644,9 +644,11 @@ export function ListingTable({
                         {listing.propertyType === "Appartement" && (
                           <div className="flex items-center gap-1">
                             <Badge variant="success">
-                              F
-                              {listing.features.bedrooms
-                                ? listing.features.bedrooms
+                              {listing.features.layoutNotation ?? "F"}
+                              {listing.features.roomCount
+                                ? listing.features.roomCount
+                                : listing.features.bedrooms
+                                  ? listing.features.bedrooms
                                 : "?"}
                             </Badge>
                             {listing.features.etage && (

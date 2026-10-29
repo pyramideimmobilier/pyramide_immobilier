@@ -141,9 +141,12 @@ function buildListingDescription(
       : ""
   }.`;
 
-  const roomCount = params.features.bedrooms;
+  const roomCount = params.features.roomCount ?? params.features.bedrooms;
+  const layoutNotation = params.features.layoutNotation ?? "F";
   const roomsLine =
-    roomCount && roomCount > 0 ? `Nombre de pièces : F${roomCount}` : undefined;
+    roomCount && roomCount > 0
+      ? `Nombre de pièces : ${layoutNotation}${roomCount}`
+      : undefined;
 
   const details = [
     referenceCode ? `Réf : ${referenceCode}` : undefined,
@@ -552,6 +555,7 @@ export async function fetchListings(
     if (search) {
       const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const regex = new RegExp(escapedSearch, "i");
+      const layoutSearch = search.trim().match(/^([ft])\s*([0-9]{1,2})$/i);
 
       // Phone numbers are stored in international format (for example
       // +213555123456), while users commonly search using the local format
@@ -583,6 +587,22 @@ export async function fetchListings(
         { "location.city": regex },
         { "location.district": regex },
         { "location.address": regex },
+        ...(layoutSearch
+          ? [
+              {
+                "features.layoutNotation": layoutSearch[1].toUpperCase(),
+                "features.roomCount": Number(layoutSearch[2]),
+              },
+              ...(layoutSearch[1].toUpperCase() === "F"
+                ? [
+                    {
+                      "features.layoutNotation": { $exists: false },
+                      "features.bedrooms": Number(layoutSearch[2]),
+                    },
+                  ]
+                : []),
+            ]
+          : []),
         ...(matchingClientIds.length > 0
           ? [{ sellerClient: { $in: matchingClientIds } }]
           : []),

@@ -87,6 +87,8 @@ export interface IListing {
 
   features: {
     bedrooms: number;
+    layoutNotation?: "F" | "T";
+    roomCount?: number;
     bathrooms: number;
     area: number; // m²
     facade?: number;
@@ -227,6 +229,8 @@ const listingSchema = new Schema<IListing>(
 
     features: {
       bedrooms: { type: Number, default: 0 },
+      layoutNotation: { type: String, enum: ["F", "T"] },
+      roomCount: { type: Number, min: 1, max: 20 },
       bathrooms: { type: Number, default: 0 },
       area: { type: Number, required: true },
       facade: { type: Number },

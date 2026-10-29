@@ -103,6 +103,14 @@ export default function ListingForm({
           },
           features: {
             bedrooms: initialData.features.bedrooms,
+            layoutNotation:
+              initialData.features.layoutNotation ??
+              (initialData.propertyType === "Appartement" ? "F" : undefined),
+            roomCount:
+              initialData.features.roomCount ??
+              (initialData.propertyType === "Appartement"
+                ? initialData.features.bedrooms || undefined
+                : undefined),
             bathrooms: initialData.features.bathrooms,
             area: initialData.features.area,
             facade: initialData.features.facade,
@@ -156,6 +164,8 @@ export default function ListingForm({
           },
           features: {
             bedrooms: 0,
+            layoutNotation: "F",
+            roomCount: 3,
             bathrooms: 0,
             area: 0,
             etage: undefined,
@@ -250,7 +260,10 @@ export default function ListingForm({
                     <FormItem>
                       <FormLabel>Titre</FormLabel>
                       <FormControl>
-                        <Input placeholder="Appartement F3 à Oran" {...field} />
+                        <Input
+                          placeholder="Appartement F3 ou T3 à Oran"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -514,6 +527,47 @@ export default function ListingForm({
                 <CardTitle>Caractéristiques</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                {selectedPropertyType === "Appartement" && (
+                  <>
+                    <FormField
+                      control={form.control}
+                      name="features.layoutNotation"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nomenclature</FormLabel>
+                          <Select value={field.value} onValueChange={field.onChange}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="F ou T" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="F">F (ex. F3)</SelectItem>
+                              <SelectItem value="T">T (ex. T3)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="features.roomCount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nombre de pièces</FormLabel>
+                          <FormControl>
+                            <Input type="number" min={1} max={20} {...field} />
+                          </FormControl>
+                          <FormDescription>
+                            Définit la typologie, par exemple F3 ou T3.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </>
+                )}
                 <FormField
                   control={form.control}
                   name="features.bedrooms"

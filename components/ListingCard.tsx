@@ -9,7 +9,8 @@ import ROUTES from "@/constants/routes";
 import AddToWishlistButton from "./AddToWishlistButton";
 
 export default function ListingCard({ listing }: { listing: Listing }) {
-  const { title, images, price, location, status, features } = listing;
+  const { title, images, price, location, status, features, propertyType } =
+    listing;
 
   // Get the first public image, or first image if all are private
   const displayImage = images?.find((img) => img.isPublic) || images?.[0];
@@ -49,6 +50,13 @@ export default function ListingCard({ listing }: { listing: Listing }) {
 
           {/* Features */}
           <div className="flex justify-between items-center gap-4 text-sm mb-3">
+            {propertyType === "Appartement" &&
+              (features.roomCount || features.bedrooms) && (
+                <div className="font-semibold">
+                  {features.layoutNotation ?? "F"}
+                  {features.roomCount ?? features.bedrooms}
+                </div>
+              )}
             <div className="flex items-center gap-1">
               <Bed className="w-4 h-4" /> {features.bedrooms}
             </div>

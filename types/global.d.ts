@@ -107,6 +107,8 @@ interface Listing {
 
   features: {
     bedrooms: number;
+    layoutNotation?: "F" | "T";
+    roomCount?: number;
     bathrooms: number;
     area: number; // m²
     facade?: number;

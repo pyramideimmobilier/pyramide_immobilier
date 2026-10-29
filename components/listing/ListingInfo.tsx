@@ -185,6 +185,15 @@ export default function ListingInfo({
 
       {/* Quick stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {listing.propertyType === "Appartement" && (
+          <Stat
+            icon={Building2}
+            label="Typologie"
+            value={`${listing.features.layoutNotation ?? "F"}${
+              listing.features.roomCount ?? listing.features.bedrooms ?? "?"
+            }`}
+          />
+        )}
         <Stat icon={Bed} label="Chambres" value={listing.features.bedrooms} />
         <Stat
           icon={Bath}

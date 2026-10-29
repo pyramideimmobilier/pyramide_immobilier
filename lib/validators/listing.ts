@@ -57,6 +57,8 @@ export const listingSchema = z
 
     features: z.object({
       bedrooms: z.coerce.number().min(0).max(20),
+      layoutNotation: z.enum(["F", "T"]).optional(),
+      roomCount: z.coerce.number().min(1).max(20).optional(),
       bathrooms: z.coerce.number().min(0).max(20),
       facade: z.preprocess(
         (value) => (value === "" ? undefined : value),
@@ -132,6 +134,22 @@ export const listingSchema = z
         message: "Type de bien personnalisé requis",
         path: ["propertyTypeCustom"],
       });
+    }
+    if (data.propertyType === "Appartement") {
+      if (!data.features.layoutNotation) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Nomenclature F ou T requise",
+          path: ["features", "layoutNotation"],
+        });
+      }
+      if (!data.features.roomCount) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Nombre de pièces requis",
+          path: ["features", "roomCount"],
+        });
+      }
     }
   });
 

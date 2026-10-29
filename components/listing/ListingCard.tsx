@@ -6,7 +6,16 @@ import { Button } from "@/components/ui/button";
 import { cn, formatPrice } from "@/lib/utils";
 
 export default function ListingCard({ listing }: { listing: Listing }) {
-  const { title, images, price, location, status, features, isFeatured } =
+  const {
+    title,
+    images,
+    price,
+    location,
+    status,
+    features,
+    isFeatured,
+    propertyType,
+  } =
     listing;
 
   const formattedPrice = formatPrice(price);
@@ -86,6 +95,13 @@ export default function ListingCard({ listing }: { listing: Listing }) {
 
         {/* Features */}
         <div className="flex items-center gap-4 text-sm text-gray-600">
+          {propertyType === "Appartement" &&
+            (features.roomCount || features.bedrooms) && (
+              <div className="font-semibold">
+                {features.layoutNotation ?? "F"}
+                {features.roomCount ?? features.bedrooms}
+              </div>
+            )}
           {features?.bedrooms !== undefined && (
             <div className="flex items-center gap-1">
               <Bed size={16} /> {features.bedrooms}

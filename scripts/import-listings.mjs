@@ -179,8 +179,15 @@ function parsePropertyType(typeDeBien) {
 
   const str = typeDeBien.trim().toLowerCase();
 
-  const fMatch = str.match(/f(\d)/i);
-  if (fMatch) return { propertyType: 'Appartement', bedrooms: parseInt(fMatch[1]) };
+  const layoutMatch = str.match(/\b([ft])\s*([0-9]{1,2})\b/i);
+  if (layoutMatch) {
+    return {
+      propertyType: 'Appartement',
+      bedrooms: 0,
+      layoutNotation: layoutMatch[1].toUpperCase(),
+      roomCount: parseInt(layoutMatch[2]),
+    };
+  }
 
   if (str.includes('studio'))     return { propertyType: 'Studio',          bedrooms: 1 };
   if (str.includes('villa'))      return { propertyType: 'Villa',            bedrooms: 0 };
@@ -339,7 +346,12 @@ function mapRow(row) {
   const information  = (row['Information']    || '').trim();
   const disponibilite = (row['Disponibilité'] || '').trim();
 
-  const { propertyType, bedrooms: typebedrooms } = parsePropertyType(typeDeBien);
+  const {
+    propertyType,
+    bedrooms: typebedrooms,
+    layoutNotation,
+    roomCount,
+  } = parsePropertyType(typeDeBien);
   const { city, address }                        = parseLocationField(localisation);
   const status                                   = parseStatus(typeService, disponibilite);
   const price                                    = parsePrice(prixStr);
@@ -375,6 +387,8 @@ function mapRow(row) {
     },
     features: {
       bedrooms,
+      ...(layoutNotation && { layoutNotation }),
+      ...(roomCount && { roomCount }),
       bathrooms:  info.bathrooms  || 0,
       area,
       ...(info.etage     !== undefined && { etage:     info.etage }),
@@ -448,6 +462,8 @@ const listingSchema = new mongoose.Schema(
     },
     features: {
       bedrooms:  { type: Number, default: 0 },
+      layoutNotation: { type: String, enum: ['F', 'T'] },
+      roomCount: { type: Number, min: 1, max: 20 },
       bathrooms: { type: Number, default: 0 },
       area:      { type: Number, required: true },
       etage:     Number,
