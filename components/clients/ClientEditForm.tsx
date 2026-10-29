@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -45,6 +46,7 @@ export default function ClientEditForm({ client }: ClientEditFormProps) {
     resolver: zodResolver(updateClientSchema),
     defaultValues: {
       type: client.type,
+      profileKind: client.profileKind || (client.type === "INTERMEDIARY" ? "BROKER" : "INDIVIDUAL"),
       firstName: client.firstName,
       lastName: client.lastName,
       phone: client.phone,
@@ -67,6 +69,11 @@ export default function ClientEditForm({ client }: ClientEditFormProps) {
       leadSourceDetails: client.leadSourceDetails || "",
     },
   });
+  const profileKind = form.watch("profileKind");
+  useEffect(() => {
+    if (profileKind === "BROKER") form.setValue("type", "INTERMEDIARY");
+    else if (form.getValues("type") === "INTERMEDIARY") form.setValue("type", "BUYER");
+  }, [form, profileKind]);
 
   const onSubmit = async (values: ClientEditFormValues) => {
     const result = await updateClient(client._id, {
@@ -92,6 +99,8 @@ export default function ClientEditForm({ client }: ClientEditFormProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <FormField control={form.control} name="profileKind" render={({ field }) => <FormItem><FormLabel>Profil</FormLabel><Select value={field.value} onValueChange={field.onChange}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="INDIVIDUAL">Client particulier</SelectItem><SelectItem value="BROKER">Courtier immobilier</SelectItem></SelectContent></Select><FormMessage /></FormItem>} />
+
           <FormField
             control={form.control}
             name="firstName"
@@ -152,7 +161,7 @@ export default function ClientEditForm({ client }: ClientEditFormProps) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <FormField
+          {profileKind === "INDIVIDUAL" && <FormField
             control={form.control}
             name="type"
             render={({ field }) => (
@@ -172,13 +181,12 @@ export default function ClientEditForm({ client }: ClientEditFormProps) {
                     <SelectItem value="SELLER">Vendeur</SelectItem>
                     <SelectItem value="RENTER">Loueur</SelectItem>
                     <SelectItem value="INVESTOR">Investisseur</SelectItem>
-                    <SelectItem value="INTERMEDIARY">Intermédiaire</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
               </FormItem>
             )}
-          />
+          />}
 
           <FormField
             control={form.control}

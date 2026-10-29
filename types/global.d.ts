@@ -192,6 +192,7 @@ interface Client {
   _id: string;
 
   referenceCode: string; // BUY-00032
+  profileKind?: "INDIVIDUAL" | "BROKER";
   type: "BUYER" | "SELLER" | "RENTER" | "INVESTOR" | "INTERMEDIARY";
 
   firstName?: string;

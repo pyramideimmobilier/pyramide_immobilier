@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { cn, formatPriceAlgeria } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { createClient } from "@/lib/actions/client.action";
 import { clientSchema } from "@/lib/validators/client";
@@ -66,6 +66,7 @@ export default function ClientCreateForm() {
       phone2: "",
       email: "",
       type: "BUYER",
+      profileKind: "INDIVIDUAL",
       city: "",
       budgetMin: undefined,
       budgetMax: undefined,
@@ -85,6 +86,11 @@ export default function ClientCreateForm() {
 
   const router = useRouter();
   const selectedClientType = form.watch("type");
+  const selectedProfileKind = form.watch("profileKind");
+  useEffect(() => {
+    if (selectedProfileKind === "BROKER") form.setValue("type", "INTERMEDIARY");
+    else if (form.getValues("type") === "INTERMEDIARY") form.setValue("type", "BUYER");
+  }, [form, selectedProfileKind]);
   const onSubmit = async (values: ClientFormValues) => {
     const result = await createClient(values);
 
@@ -310,6 +316,12 @@ export default function ClientCreateForm() {
             />
 
             {/* Client Type */}
+            <FormField control={form.control} name="profileKind" render={({ field }) => (
+              <FormItem><FormLabel>Profil du contact</FormLabel><Select value={field.value} onValueChange={field.onChange}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="INDIVIDUAL">Client particulier</SelectItem><SelectItem value="BROKER">Courtier immobilier</SelectItem></SelectContent></Select><FormDescription>Les courtiers sont séparés des clients acheteurs, vendeurs et locataires.</FormDescription><FormMessage /></FormItem>
+            )} />
+
+            {/* Client Type */}
+            {selectedProfileKind === "INDIVIDUAL" && (
             <FormField
               control={form.control}
               name="type"
@@ -329,17 +341,17 @@ export default function ClientCreateForm() {
                       <SelectItem value="BUYER">Acheteur</SelectItem>
                       <SelectItem value="RENTER">Loueur</SelectItem>
                       <SelectItem value="INVESTOR">Investisseur</SelectItem>
-                      <SelectItem value="INTERMEDIARY">Intermédiaire</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            )}
 
             {selectedClientType === "INTERMEDIARY" && (
               <div className="rounded-lg border border-violet-200 bg-violet-50 p-3 text-sm text-violet-900 dark:border-violet-900 dark:bg-violet-950/30 dark:text-violet-100">
-                Cette fiche sera enregistrée comme intermédiaire et restera distincte des clients acheteurs, vendeurs et locataires.
+                Cette fiche sera enregistrée comme courtier immobilier et restera distincte des clients particuliers.
               </div>
             )}
 

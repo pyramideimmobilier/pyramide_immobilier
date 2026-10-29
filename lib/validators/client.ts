@@ -15,6 +15,7 @@ const qualificationStatusSchema = z.enum([
 ]);
 
 export const clientSchema = z.object({
+  profileKind: z.enum(["INDIVIDUAL", "BROKER"]),
   type: z.enum(["BUYER", "SELLER", "RENTER", "INVESTOR", "INTERMEDIARY"]),
 
   firstName: z.string().optional(),
@@ -48,6 +49,9 @@ export const clientSchema = z.object({
 
   qualificationNotes: z.string().optional(),
   assignedAgent: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.profileKind === "BROKER" && data.type !== "INTERMEDIARY") ctx.addIssue({ code: "custom", path: ["type"], message: "Un courtier doit utiliser le profil courtier" });
+  if (data.profileKind === "INDIVIDUAL" && data.type === "INTERMEDIARY") ctx.addIssue({ code: "custom", path: ["type"], message: "Sélectionnez le profil courtier" });
 });
 
 export const fetchClientsSchema = z.object({
@@ -64,6 +68,7 @@ export const fetchClientsSchema = z.object({
 });
 
 export const updateClientSchema = z.object({
+  profileKind: z.enum(["INDIVIDUAL", "BROKER"]),
   type: z.enum(["BUYER", "SELLER", "RENTER", "INVESTOR", "INTERMEDIARY"]),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
@@ -96,6 +101,9 @@ export const updateClientSchema = z.object({
   qualificationStatus: qualificationStatusSchema,
   qualificationNotes: z.string().optional(),
   assignedAgent: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.profileKind === "BROKER" && data.type !== "INTERMEDIARY") ctx.addIssue({ code: "custom", path: ["type"], message: "Un courtier doit utiliser le profil courtier" });
+  if (data.profileKind === "INDIVIDUAL" && data.type === "INTERMEDIARY") ctx.addIssue({ code: "custom", path: ["type"], message: "Sélectionnez le profil courtier" });
 });
 
 export const updateClientAgentSchema = z.object({

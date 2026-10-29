@@ -38,7 +38,7 @@ const TYPE_LABELS: Record<string, string> = {
   SELLER: "Vendeur",
   RENTER: "Loueur",
   INVESTOR: "Investisseur",
-  INTERMEDIARY: "Intermédiaire",
+  INTERMEDIARY: "Courtier immobilier",
 };
 
 const TYPE_COLORS: Record<string, "default" | "secondary" | "outline"> = {

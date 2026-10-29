@@ -11,6 +11,7 @@ export type PipelineStage =
   | "ARCHIVED";
 
 export type ClientInput = {
+  profileKind: "INDIVIDUAL" | "BROKER";
   type: "BUYER" | "SELLER" | "RENTER" | "INVESTOR" | "INTERMEDIARY";
 
   firstName?: string;
@@ -37,6 +38,7 @@ export type ClientInput = {
 };
 
 export type ClientUpdateInput = {
+  profileKind: "INDIVIDUAL" | "BROKER";
   type: "BUYER" | "SELLER" | "RENTER" | "INVESTOR" | "INTERMEDIARY";
   firstName?: string;
   lastName?: string;

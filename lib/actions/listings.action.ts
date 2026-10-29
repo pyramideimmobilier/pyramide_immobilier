@@ -239,6 +239,7 @@ export async function createListing(
 
     const sellerClient = await Client.create({
       referenceCode: sellerReferenceCode,
+      profileKind: "INDIVIDUAL",
       type: "SELLER",
       firstName: sellerFirstName,
       lastName: sellerLastName,

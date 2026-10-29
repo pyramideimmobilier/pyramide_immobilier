@@ -27,6 +27,7 @@ export type PipelineStage =
 
 export interface IClient {
   referenceCode: string;
+  profileKind: "INDIVIDUAL" | "BROKER";
   type: ClientType;
 
   firstName?: string;
@@ -85,6 +86,7 @@ export interface IClient {
 const clientSchema = new Schema<IClient>(
   {
     referenceCode: { type: String, unique: true },
+    profileKind: { type: String, enum: ["INDIVIDUAL", "BROKER"], default: "INDIVIDUAL", index: true },
     type: {
       type: String,
       enum: ["BUYER", "SELLER", "RENTER", "INVESTOR", "INTERMEDIARY"],
