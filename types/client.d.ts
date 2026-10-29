@@ -16,6 +16,7 @@ export type ClientInput = {
   firstName?: string;
   lastName?: string;
   phone: string;
+  phone2?: string;
   email?: string;
   city?: string;
   budgetMin?: number;
@@ -38,6 +39,7 @@ export type ClientUpdateInput = {
   firstName?: string;
   lastName?: string;
   phone: string;
+  phone2?: string;
   email?: string;
   city?: string;
   budgetMin?: number;

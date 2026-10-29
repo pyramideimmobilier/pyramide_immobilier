@@ -32,6 +32,7 @@ export interface IClient {
   lastName?: string;
   phone: string;
   phone2?: string;
+  phoneKeys?: string[];
   email?: string;
 
   budgetMin?: number;
@@ -91,6 +92,7 @@ const clientSchema = new Schema<IClient>(
     lastName: { type: String },
     phone: { type: String, required: true },
     phone2: String,
+    phoneKeys: { type: [String], default: undefined },
     email: String,
 
     budgetMin: Number,
@@ -175,6 +177,8 @@ const clientSchema = new Schema<IClient>(
   },
   { timestamps: true }
 );
+
+clientSchema.index({ phoneKeys: 1 }, { unique: true, sparse: true, name: "unique_client_phone" });
 
 const Client = models.Client || model<IClient>("Client", clientSchema);
 

@@ -33,6 +33,22 @@ import {
 import { FilterQuery, Types } from "mongoose";
 import { CLIENT_AGENT_ROLES, ClientQualification, isElevatedRole } from "@/constants/values";
 import dbConnect from "../mongoose";
+import { buildPhoneKeys, phoneSearchVariants } from "../phone";
+
+type DuplicateClientSummary = { referenceCode: string; archived?: boolean };
+
+async function findClientWithPhone(phoneKeys: string[], excludeId?: string): Promise<DuplicateClientSummary | null> {
+  if (!phoneKeys.length) return null;
+  const variants = phoneKeys.flatMap(phoneSearchVariants);
+  return await Client.findOne({
+    ...(excludeId ? { _id: { $ne: excludeId } } : {}),
+    $or: [
+      { phoneKeys: { $in: phoneKeys } },
+      { phone: { $in: variants } },
+      { phone2: { $in: variants } },
+    ],
+  }).select("referenceCode archived").lean() as unknown as DuplicateClientSummary | null;
+}
 import { revalidatePath } from "next/cache";
 import ROUTES from "@/constants/routes";
 import { notify, notifyManagers } from "../notifications/notify";
@@ -148,6 +164,15 @@ export async function createClient(
 
   try {
     const { type, assignedAgent: providedAgent } = validationResult.params;
+    const phoneKeys = buildPhoneKeys(validationResult.params.phone, validationResult.params.phone2);
+    const duplicate = await findClientWithPhone(phoneKeys);
+    if (duplicate) {
+      return {
+        success: false,
+        error: { message: `Ce numéro est déjà enregistré sous la référence ${duplicate.referenceCode}${duplicate.archived ? " (archivée)" : ""}.` },
+        status: 409,
+      };
+    }
 
     // 4️⃣ Determine assigned agent. Agent-created clients must be assigned in
     // the same database insert so they are never visible to admins as
@@ -212,6 +237,7 @@ export async function createClient(
           archived: false,
           createdBy: user.data._id,
           assignedAgent,
+          phoneKeys,
         });
         break; // success — exit retry loop
       } catch (err: unknown) {
@@ -868,6 +894,15 @@ export async function updateClient(
     }
 
     const qualificationStatus = validationResult.params?.qualificationStatus;
+    const phoneKeys = buildPhoneKeys(validationResult.params?.phone, validationResult.params?.phone2);
+    const duplicate = await findClientWithPhone(phoneKeys, clientId);
+    if (duplicate) {
+      return {
+        success: false,
+        error: { message: `Ce numéro est déjà utilisé par le contact ${duplicate.referenceCode}${duplicate.archived ? " (archivé)" : ""}.` },
+        status: 409,
+      };
+    }
     const pipelineUpdate =
       qualificationStatus === "WARM" || qualificationStatus === "HOT"
         ? { pipelineStage: "ACTIVE_SEARCH", clientTemperature: qualificationStatus }
@@ -888,6 +923,7 @@ export async function updateClient(
         $set: {
           ...validationResult.params,
           ...pipelineUpdate,
+          phoneKeys,
           archived:
             qualificationStatus === "ARCHIVED" ||
             qualificationStatus === "NOT_RELEVANT",

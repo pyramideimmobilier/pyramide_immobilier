@@ -198,6 +198,7 @@ interface Client {
   lastName?: string;
   phone: string;
   phone2?: string;
+  phoneKeys?: string[];
   email?: string;
 
   budgetMin?: number;

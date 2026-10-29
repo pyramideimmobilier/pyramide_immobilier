@@ -34,6 +34,7 @@ import {
 } from "@/constants/values";
 import ROUTES from "@/constants/routes";
 import { clientPrefix, formatPriceAlgeria } from "../utils";
+import { buildPhoneKeys, phoneSearchVariants } from "../phone";
 
 function getListingReferencePrefix(status: string): "V" | "L" {
   return status === "En Location" || status === "Loué" ? "L" : "V";
@@ -219,6 +220,23 @@ export async function createListing(
       sellerCount + 1
     ).padStart(3, "0")}`;
 
+    const sellerPhoneKeys = buildPhoneKeys(sellerPhone, sellerPhone2);
+    const sellerVariants = sellerPhoneKeys.flatMap(phoneSearchVariants);
+    const existingSeller = await Client.findOne({
+      $or: [
+        { phoneKeys: { $in: sellerPhoneKeys } },
+        { phone: { $in: sellerVariants } },
+        { phone2: { $in: sellerVariants } },
+      ],
+    }).select("referenceCode archived").lean() as unknown as { referenceCode: string; archived?: boolean } | null;
+    if (existingSeller) {
+      return {
+        success: false,
+        error: { message: `Le vendeur existe déjà sous la référence ${existingSeller.referenceCode}${existingSeller.archived ? " (archivée)" : ""}. Utilisez sa fiche existante avant d’ajouter le bien.` },
+        status: 409,
+      };
+    }
+
     const sellerClient = await Client.create({
       referenceCode: sellerReferenceCode,
       type: "SELLER",
@@ -232,6 +250,7 @@ export async function createListing(
       archived: false,
       createdBy: user.data._id,
       assignedAgent: user.data._id,
+      phoneKeys: sellerPhoneKeys,
     });
 
     // 4. Create listing (no reference code yet — assigned on validation)
