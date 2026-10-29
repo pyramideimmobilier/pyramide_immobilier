@@ -37,7 +37,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import ROUTES from "@/constants/routes";
-import { WILAYAS } from "@/constants/values";
+import { LEAD_SOURCES, WILAYAS } from "@/constants/values";
 import { COUNTRY_CODES, type CountryId } from "@/lib/country-codes";
 
 type ClientFormValues = z.infer<typeof clientSchema>;
@@ -78,6 +78,8 @@ export default function ClientCreateForm() {
       preferredLocation: "",
       extraNotes: "",
       qualificationNotes: "",
+      leadSource: "DIRECT_CALL",
+      leadSourceDetails: "",
     },
   });
 
@@ -340,6 +342,13 @@ export default function ClientCreateForm() {
                 Cette fiche sera enregistrée comme intermédiaire et restera distincte des clients acheteurs, vendeurs et locataires.
               </div>
             )}
+
+            <FormField control={form.control} name="leadSource" render={({ field }) => (
+              <FormItem><FormLabel>Source du lead</FormLabel><Select value={field.value} onValueChange={field.onChange}><FormControl><SelectTrigger><SelectValue placeholder="Sélectionner la provenance" /></SelectTrigger></FormControl><SelectContent>{LEAD_SOURCES.filter((source) => source.value !== "UNKNOWN").map((source) => <SelectItem key={source.value} value={source.value}>{source.label}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+            )} />
+            <FormField control={form.control} name="leadSourceDetails" render={({ field }) => (
+              <FormItem><FormLabel>Précision sur la source <span className="text-xs text-muted-foreground">(optionnel)</span></FormLabel><FormControl><Input placeholder="Nom du recommandant, campagne, publication…" {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
 
             {/* City */}
             <FormField

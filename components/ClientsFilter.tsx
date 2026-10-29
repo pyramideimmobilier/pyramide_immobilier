@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
-import { CLIENT_QUALIFICATIONS } from "@/constants/values";
+import { CLIENT_QUALIFICATIONS, LEAD_SOURCES } from "@/constants/values";
 
 type ClientsFilterProps = {
   agents?: User[];
@@ -36,9 +36,10 @@ export default function ClientsFilter({
     searchParams.get("propertyType") ?? ""
   );
   const [search, setSearch] = useState(searchParams.get("search") ?? "");
+  const [leadSource, setLeadSource] = useState(searchParams.get("leadSource") ?? "");
 
   const hasActiveFilters =
-    !!agentId || !!qualification || !!type || !!propertyType || !!search;
+    !!agentId || !!qualification || !!type || !!propertyType || !!leadSource || !!search;
 
   const handleApplyFilters = () => {
     const params = new URLSearchParams();
@@ -51,6 +52,7 @@ export default function ClientsFilter({
     if (type) params.set("type", type);
     if (propertyType) params.set("propertyType", propertyType);
     if (search) params.set("search", search);
+    if (leadSource) params.set("leadSource", leadSource);
 
     startTransition(() => {
       router.push(`?${params.toString()}`, { scroll: false });
@@ -63,6 +65,7 @@ export default function ClientsFilter({
     setType("");
     setPropertyType("");
     setSearch("");
+    setLeadSource("");
 
     startTransition(() => {
       const params = new URLSearchParams();
@@ -142,6 +145,12 @@ export default function ClientsFilter({
             <SelectItem value="Penthouse">Penthouse</SelectItem>
             <SelectItem value="Local Commercial">Local Commercial</SelectItem>
           </SelectContent>
+        </Select>
+
+        {/* Qualification filter */}
+        <Select value={leadSource} onValueChange={setLeadSource}>
+          <SelectTrigger className="w-[170px]"><SelectValue placeholder="Source du lead" /></SelectTrigger>
+          <SelectContent><SelectItem value="__all__">Toutes les sources</SelectItem>{LEAD_SOURCES.map((source) => <SelectItem key={source.value} value={source.value}>{source.label}</SelectItem>)}</SelectContent>
         </Select>
 
         {/* Qualification filter */}

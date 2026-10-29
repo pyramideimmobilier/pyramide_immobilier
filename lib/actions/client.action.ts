@@ -304,6 +304,7 @@ export async function fetchClients(
       clientTemperature,
       wantedPropertyType,
       agentId,
+      leadSource,
       search,
       page = 1,
       limit = 10,
@@ -364,6 +365,7 @@ export async function fetchClients(
     }
     if (clientTemperature) filter.clientTemperature = clientTemperature;
     if (wantedPropertyType) filter.wantedPropertyType = wantedPropertyType;
+    if (leadSource) filter.leadSource = leadSource;
 
     // Agent filter (admin/manager only)
     if (isAdmin && agentId) {

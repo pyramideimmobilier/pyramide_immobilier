@@ -29,6 +29,8 @@ export type ClientInput = {
   floorMax?: number;
   preferredLocation?: string;
   extraNotes?: string;
+  leadSource: import("@/constants/values").LeadSource;
+  leadSourceDetails?: string;
 
   qualificationNotes?: string;
   assignedAgent?: string;
@@ -52,6 +54,8 @@ export type ClientUpdateInput = {
   floorMax?: number;
   preferredLocation?: string;
   extraNotes?: string;
+  leadSource: import("@/constants/values").LeadSource;
+  leadSourceDetails?: string;
   qualificationStatus:
     | "NEUTRAL"
     | "NEW"
@@ -82,6 +86,7 @@ export type ClientFilters = {
   clientTemperature?: ClientTemperature;
   wantedPropertyType?: string;
   agentId?: string;
+  leadSource?: import("@/constants/values").LeadSource;
   search?: string;
   fromDate?: Date;
   toDate?: Date;

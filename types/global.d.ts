@@ -213,6 +213,8 @@ interface Client {
   preferredLocation?: string;
 
   extraNotes?: string;
+  leadSource?: import("@/constants/values").LeadSource;
+  leadSourceDetails?: string;
 
   qualificationStatus:
     | "NEUTRAL"

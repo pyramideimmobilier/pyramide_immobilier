@@ -74,6 +74,22 @@ export const CLIENT_QUALIFICATIONS = [
 export type ClientQualification =
   (typeof CLIENT_QUALIFICATIONS)[number]["value"];
 
+export const LEAD_SOURCES = [
+  { value: "TIKTOK", label: "TikTok" },
+  { value: "FACEBOOK", label: "Facebook" },
+  { value: "INSTAGRAM", label: "Instagram" },
+  { value: "OUEDKNISS", label: "Ouedkniss" },
+  { value: "REFERRAL", label: "Recommandation" },
+  { value: "DIRECT_CALL", label: "Appel direct" },
+  { value: "WALK_IN", label: "Passage en agence" },
+  { value: "WEBSITE", label: "Site web" },
+  { value: "OTHER", label: "Autre" },
+  { value: "UNKNOWN", label: "Non renseignée" },
+] as const;
+export type LeadSource = (typeof LEAD_SOURCES)[number]["value"];
+export const getLeadSourceLabel = (value?: string) =>
+  LEAD_SOURCES.find((source) => source.value === value)?.label ?? "Non renseignée";
+
 export const routeTitles: Record<string, string> = {
   // === Auth ===
   "/sign-in": "Connexion",

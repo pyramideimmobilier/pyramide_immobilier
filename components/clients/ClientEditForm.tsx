@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { updateClient } from "@/lib/actions/client.action";
 import { updateClientSchema } from "@/lib/validators/client";
 import { ClientType } from "@/models/client.model";
-import { CLIENT_QUALIFICATIONS, WILAYAS } from "@/constants/values";
+import { CLIENT_QUALIFICATIONS, LEAD_SOURCES, WILAYAS } from "@/constants/values";
 import { cn, formatPriceAlgeria } from "@/lib/utils";
 
 import {
@@ -63,6 +63,8 @@ export default function ClientEditForm({ client }: ClientEditFormProps) {
       qualificationNotes: client.qualificationNotes || "",
       extraNotes: client.extraNotes || "",
       assignedAgent: client.assignedAgent?._id || "",
+      leadSource: client.leadSource || "UNKNOWN",
+      leadSourceDetails: client.leadSourceDetails || "",
     },
   });
 
@@ -483,6 +485,11 @@ export default function ClientEditForm({ client }: ClientEditFormProps) {
             </FormItem>
           )}
         />
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <FormField control={form.control} name="leadSource" render={({ field }) => <FormItem><FormLabel>Source du lead</FormLabel><Select value={field.value} onValueChange={field.onChange}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>{LEAD_SOURCES.map((source) => <SelectItem key={source.value} value={source.value}>{source.label}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>} />
+          <FormField control={form.control} name="leadSourceDetails" render={({ field }) => <FormItem><FormLabel>Précision</FormLabel><FormControl><Input placeholder="Campagne, recommandant…" {...field} /></FormControl><FormMessage /></FormItem>} />
+        </div>
 
         <Button type="submit" className="w-full">
           Mettre à jour

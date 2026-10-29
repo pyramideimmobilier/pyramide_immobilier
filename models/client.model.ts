@@ -1,4 +1,5 @@
 import { Schema, model, models } from "mongoose";
+import type { LeadSource } from "@/constants/values";
 
 export type ClientType = "BUYER" | "SELLER" | "RENTER" | "INVESTOR" | "INTERMEDIARY";
 export type QualificationStatus =
@@ -46,6 +47,8 @@ export interface IClient {
   floorMax?: number;
   preferredLocation?: string;
   extraNotes?: string;
+  leadSource: LeadSource;
+  leadSourceDetails?: string;
 
   qualificationStatus: QualificationStatus;
   qualificationNotes?: string;
@@ -110,6 +113,13 @@ const clientSchema = new Schema<IClient>(
     floorMax: Number,
     preferredLocation: String,
     extraNotes: String,
+    leadSource: {
+      type: String,
+      enum: ["TIKTOK", "FACEBOOK", "INSTAGRAM", "OUEDKNISS", "REFERRAL", "DIRECT_CALL", "WALK_IN", "WEBSITE", "OTHER", "UNKNOWN"],
+      default: "UNKNOWN",
+      index: true,
+    },
+    leadSourceDetails: { type: String, trim: true },
 
     qualificationStatus: {
       type: String,

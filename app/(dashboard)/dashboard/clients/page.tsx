@@ -31,6 +31,7 @@ type SearchParams = {
   page?: string;
   view?: string;
   stage?: string;
+  leadSource?: string;
 };
 
 async function ClientsContent({
@@ -71,6 +72,9 @@ async function ClientsContent({
   }
   if (searchParams.search) {
     filterParams.search = searchParams.search;
+  }
+  if (searchParams.leadSource && searchParams.leadSource !== "__all__") {
+    filterParams.leadSource = searchParams.leadSource as ClientFilters["leadSource"];
   }
   if (canUsePipeline && !isArchiveView && searchParams.stage) {
     filterParams.pipelineStage =

@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/dialog";
 
 import ROUTES from "@/constants/routes";
-import { CLIENT_QUALIFICATIONS } from "@/constants/values";
+import { CLIENT_QUALIFICATIONS, getLeadSourceLabel } from "@/constants/values";
 import { archiveClient, restoreClient } from "@/lib/actions/client.action";
 import { cancelClientArchiveRequest } from "@/lib/actions/archiveRequest.action";
 import type { ClientDealDoneSummary } from "@/lib/actions/negotiation.action";
@@ -202,6 +202,7 @@ export default function ClientDetailPage({
           </h1>
           <Badge variant="outline">{client.referenceCode}</Badge>
           <Badge>{TYPE_LABELS[client.type]}</Badge>
+          <Badge variant="outline">Source : {getLeadSourceLabel(client.leadSource)}{client.leadSourceDetails ? ` · ${client.leadSourceDetails}` : ""}</Badge>
           <Badge variant="secondary">{qualificationLabel}</Badge>
         </div>
 

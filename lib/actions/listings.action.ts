@@ -251,6 +251,7 @@ export async function createListing(
       createdBy: user.data._id,
       assignedAgent: user.data._id,
       phoneKeys: sellerPhoneKeys,
+      leadSource: "DIRECT_CALL",
     });
 
     // 4. Create listing (no reference code yet — assigned on validation)

@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const leadSourceSchema = z.enum(["TIKTOK", "FACEBOOK", "INSTAGRAM", "OUEDKNISS", "REFERRAL", "DIRECT_CALL", "WALK_IN", "WEBSITE", "OTHER", "UNKNOWN"]);
+
 const qualificationStatusSchema = z.enum([
   "NEUTRAL",
   "NEW",
@@ -41,6 +43,8 @@ export const clientSchema = z.object({
   floorMax: z.number().min(0).optional(),
   preferredLocation: z.string().optional(),
   extraNotes: z.string().optional(),
+  leadSource: leadSourceSchema,
+  leadSourceDetails: z.string().trim().max(200).optional(),
 
   qualificationNotes: z.string().optional(),
   assignedAgent: z.string().optional(),
@@ -51,6 +55,7 @@ export const fetchClientsSchema = z.object({
   qualificationStatus: qualificationStatusSchema.optional(),
   wantedPropertyType: z.string().optional(),
   agentId: z.string().optional(),
+  leadSource: leadSourceSchema.optional(),
   search: z.string().min(1).optional(),
   page: z.number().min(1).optional(),
   limit: z.number().min(1).max(100).optional(),
@@ -86,6 +91,8 @@ export const updateClientSchema = z.object({
   floorMax: z.number().min(0).optional(),
   preferredLocation: z.string().optional(),
   extraNotes: z.string().optional(),
+  leadSource: leadSourceSchema,
+  leadSourceDetails: z.string().trim().max(200).optional(),
   qualificationStatus: qualificationStatusSchema,
   qualificationNotes: z.string().optional(),
   assignedAgent: z.string().optional(),
