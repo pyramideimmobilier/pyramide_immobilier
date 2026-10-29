@@ -50,6 +50,7 @@ import {
   Radio,
   MoreHorizontal,
   MapPin,
+  Star,
 } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Image from "next/image";
@@ -122,6 +123,19 @@ function hasNegotiationPipeline(listing: Listing) {
   return listing.pipelineStatus === "UNDER_NEGOTIATION";
 }
 
+function CommercialScoreBadge({ score }: { score?: number }) {
+  if (score === undefined) {
+    return <Badge variant="outline" className="text-xs text-muted-foreground">Non noté</Badge>;
+  }
+  const className = score >= 8
+    ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+    : score >= 5
+      ? "border-amber-300 bg-amber-50 text-amber-700"
+      : "border-red-300 bg-red-50 text-red-700";
+  const label = score >= 8 ? "Attractif" : score >= 5 ? "Standard" : "Faible potentiel";
+  return <Badge variant="outline" className={`gap-1 text-xs ${className}`}><Star className="h-3 w-3" />{score}/10 · {label}</Badge>;
+}
+
 export function ListingTable({
   listings,
   agents = [],
@@ -148,6 +162,18 @@ export function ListingTable({
       params.set("sortOrder", currentSortOrder === "asc" ? "desc" : "asc");
     } else {
       params.set("sortBy", "referenceCode");
+      params.set("sortOrder", "desc");
+    }
+    params.set("page", "1");
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const handleSortByScore = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (currentSortBy === "evaluation.finalScore") {
+      params.set("sortOrder", currentSortOrder === "desc" ? "asc" : "desc");
+    } else {
+      params.set("sortBy", "evaluation.finalScore");
       params.set("sortOrder", "desc");
     }
     params.set("page", "1");
@@ -371,9 +397,10 @@ export function ListingTable({
     <Card>
       <CardContent className="p-3 md:hidden">
         <div className="space-y-3">
-          <Button variant="ghost" size="sm" className="h-8 gap-1 px-2 text-xs text-muted-foreground" onClick={handleSortByRef}>
-            Trier par référence <RefSortIcon className="h-3.5 w-3.5" />
-          </Button>
+          <div className="flex flex-wrap gap-1">
+            <Button variant="ghost" size="sm" className="h-8 gap-1 px-2 text-xs text-muted-foreground" onClick={handleSortByRef}>Trier par référence <RefSortIcon className="h-3.5 w-3.5" /></Button>
+            <Button variant="ghost" size="sm" className="h-8 gap-1 px-2 text-xs text-muted-foreground" onClick={handleSortByScore}>Trier par note <Star className="h-3.5 w-3.5" /></Button>
+          </div>
           {listings.map((listing) => {
             const vState = getValidationState(listing);
             const documentsCount = listing.documents?.length ?? 0;
@@ -411,6 +438,7 @@ export function ListingTable({
                   <ValidationBadge state={vState} />
                   {renderArchivePending(listing)}
                   <Badge variant="outline" className={STATUS_COLORS[listing.status]}>{listing.status}</Badge>
+                  <CommercialScoreBadge score={listing.evaluation?.finalScore} />
                   {hasNegotiationPipeline(listing) && <Badge variant="purple" className="text-xs"><Radio className="h-3 w-3" />Négociation</Badge>}
                   {documentsCount > 0 && <Badge variant="outline" className="gap-1 text-xs"><FileText className="h-3 w-3" />{documentsCount}</Badge>}
                 </div>
@@ -460,6 +488,7 @@ export function ListingTable({
               <TableHead>Localisation</TableHead>
               <TableHead>Prix</TableHead>
               <TableHead>Specs</TableHead>
+              <TableHead><button onClick={handleSortByScore} className="flex items-center gap-1 hover:text-foreground">Intérêt <ArrowDownUp className="h-3 w-3" /></button></TableHead>
               <TableHead>Agent</TableHead>
               <TableHead className="w-[170px]">État</TableHead>
               <TableHead className="w-[140px]">Validation / ajout</TableHead>
@@ -695,6 +724,10 @@ export function ListingTable({
                         </span>
                       </div>
                     </div>
+                  </TableCell>
+
+                  <TableCell>
+                    <CommercialScoreBadge score={listing.evaluation?.finalScore} />
                   </TableCell>
 
                   <TableCell onClick={(e) => e.stopPropagation()}>

@@ -577,8 +577,13 @@ export async function fetchListings(
     // referenceCode is prefixed by type ("L-..." for rent, "V-..." for sale),
     // so sorting on the string bunches all of one type before the other.
     // referenceGeneratedAt tracks the same assignment order without that bias.
-    const sortField =
-      sortBy === "referenceCode" ? "referenceGeneratedAt" : sortBy || "createdAt";
+    const allowedSortFields: Record<string, string> = {
+      referenceCode: "referenceGeneratedAt",
+      createdAt: "createdAt",
+      price: "price",
+      "evaluation.finalScore": "evaluation.finalScore",
+    };
+    const sortField = sortBy ? allowedSortFields[sortBy] ?? "createdAt" : "createdAt";
     const sortDirection = sortBy
       ? sortOrder === "asc"
         ? 1
