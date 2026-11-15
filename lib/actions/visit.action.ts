@@ -1,6 +1,6 @@
 "use server";
 
-import { Visit, Listing, Client } from "@/models";
+import { Visit, Listing, Client, FollowUp } from "@/models";
 import { IVisit } from "@/models/visit.model";
 import { IClient } from "@/models/client.model";
 import { getUserBySessionEmail } from "../getUserBySessionEmail";
@@ -194,7 +194,7 @@ export async function completeVisit(
     return { success: false, error: { message: "Non autorisé" }, status: 401 };
   }
 
-  const { visitId, outcome, notes } = validationResult.params;
+  const { visitId, outcome, notes, interestLevel, clientFeedback, refusalReason, negotiable, nextAction, nextActionAt } = validationResult.params;
 
   if (!Types.ObjectId.isValid(visitId)) {
     return {
@@ -259,11 +259,29 @@ export async function completeVisit(
         status: "COMPLETED",
         outcome,
         notes,
+        interestLevel,
+        clientFeedback,
+        refusalReason,
+        negotiable,
+        nextAction,
+        nextActionAt,
         completedAt: new Date(),
       }),
       Client.findByIdAndUpdate(clientId, {
         lastContactedAt: new Date(),
         ...(nextClientStage ? { pipelineStage: nextClientStage } : {}),
+      }),
+      FollowUp.create({
+        listing: visit.listing,
+        client: visit.client,
+        agent: visit.agent,
+        type: outcome === "INTERESTED" ? "HOT" : "CUSTOM",
+        context: "CLIENT",
+        title: nextAction,
+        note: `Relance créée depuis le compte rendu de visite : ${clientFeedback}`,
+        reminderAt: nextActionAt,
+        channel: "CALL",
+        status: "PENDING",
       }),
     ]);
 

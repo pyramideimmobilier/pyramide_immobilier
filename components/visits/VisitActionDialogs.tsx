@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -50,7 +51,7 @@ export function CompleteVisitDialog({ visitId }: { visitId: string }) {
   const router = useRouter();
   const form = useForm<CompleteValues>({
     resolver: zodResolver(completeVisitSchema),
-    defaultValues: { visitId, outcome: "INTERESTED", notes: "" },
+    defaultValues: { visitId, outcome: "INTERESTED", interestLevel: 4, clientFeedback: "", refusalReason: "", negotiable: true, nextAction: "Rappeler le client", notes: "" },
   });
 
   async function onSubmit(values: CompleteValues) {
@@ -100,6 +101,24 @@ export function CompleteVisitDialog({ visitId }: { visitId: string }) {
                 </FormItem>
               )}
             />
+            <FormField control={form.control} name="interestLevel" render={({ field }) => (
+              <FormItem><FormLabel>Niveau d’intérêt</FormLabel><Select value={String(field.value)} onValueChange={(value) => field.onChange(Number(value))}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>{[1, 2, 3, 4, 5].map((level) => <SelectItem key={level} value={String(level)}>{level}/5</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+            )} />
+            <FormField control={form.control} name="clientFeedback" render={({ field }) => (
+              <FormItem><FormLabel>Avis du client</FormLabel><FormControl><Textarea rows={2} placeholder="Ce que le client a pensé du bien…" {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+            {form.watch("outcome") === "NOT_INTERESTED" && <FormField control={form.control} name="refusalReason" render={({ field }) => (
+              <FormItem><FormLabel>Motif du refus</FormLabel><FormControl><Textarea rows={2} placeholder="Prix, emplacement, état…" {...field} /></FormControl><FormMessage /></FormItem>
+            )} />}
+            <FormField control={form.control} name="negotiable" render={({ field }) => (
+              <FormItem><FormLabel>Possibilité de négociation</FormLabel><Select value={field.value ? "yes" : "no"} onValueChange={(value) => field.onChange(value === "yes")}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="yes">Oui</SelectItem><SelectItem value="no">Non</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+            )} />
+            <FormField control={form.control} name="nextAction" render={({ field }) => (
+              <FormItem><FormLabel>Prochaine action</FormLabel><FormControl><Input placeholder="Rappeler, proposer un autre bien…" {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+            <FormField control={form.control} name="nextActionAt" render={({ field }) => (
+              <FormItem><FormLabel>Date de la prochaine relance</FormLabel><FormControl><Input type="datetime-local" value={field.value instanceof Date ? field.value.toISOString().slice(0, 16) : field.value ?? ""} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
+            )} />
             <FormField
               control={form.control}
               name="notes"

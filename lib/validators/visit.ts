@@ -32,7 +32,17 @@ export const completeVisitSchema = z.object({
   outcome: z.enum(["INTERESTED", "NOT_INTERESTED", "UNDECIDED"], {
     required_error: "Le résultat de la visite est requis",
   }),
+  interestLevel: z.coerce.number().int().min(1).max(5),
+  clientFeedback: z.string().trim().min(2, "L’avis du client est requis"),
+  refusalReason: z.string().trim().optional(),
+  negotiable: z.boolean(),
+  nextAction: z.string().trim().min(2, "La prochaine action est requise"),
+  nextActionAt: z.coerce.date({ required_error: "La date de relance est requise" }),
   notes: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.outcome === "NOT_INTERESTED" && !data.refusalReason) {
+    ctx.addIssue({ code: "custom", path: ["refusalReason"], message: "Le motif de refus est requis" });
+  }
 });
 
 export const cancelVisitSchema = z.object({

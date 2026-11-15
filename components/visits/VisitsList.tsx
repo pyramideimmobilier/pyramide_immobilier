@@ -66,6 +66,7 @@ export function VisitsList({ visits, showAgent = false, showClient = true }: Pro
               {visit.isExternalListing ? <div className="flex items-center gap-2"><Building2 className="h-4 w-4 text-muted-foreground" /><span className="italic text-muted-foreground">{visit.externalListingRef ?? "Bien externe"}</span></div> : visit.listing ? <Link href={ROUTES.LISTING_DETAIL_DASHBOARD(visit.listing._id)} className="flex items-center gap-2 font-medium"><Building2 className="h-4 w-4 text-muted-foreground" /><span className="truncate">{visit.listing.referenceCode ? `${visit.listing.referenceCode} · ` : ""}{visit.listing.title ?? "Bien"}</span></Link> : null}
               {showClient && visit.client && <Link href={ROUTES.CLIENT_DETAIL(visit.client._id)} className="flex items-center gap-2"><User className="h-4 w-4 text-muted-foreground" /><span className="truncate">{[visit.client.firstName, visit.client.lastName].filter(Boolean).join(" ") || visit.client.phone}</span></Link>}
               {showAgent && <div className="flex items-center gap-2 text-muted-foreground"><User className="h-4 w-4" />{visit.agent ? `${visit.agent.firstname} ${visit.agent.lastname}` : "Agent non assigné"}</div>}
+              {visit.status === "COMPLETED" && visit.clientFeedback && <div className="rounded-md bg-muted/50 p-2 text-xs"><p><span className="font-medium">Compte rendu :</span> {visit.clientFeedback}</p>{visit.interestLevel && <p>Intérêt : {visit.interestLevel}/5</p>}{visit.refusalReason && <p>Refus : {visit.refusalReason}</p>}{visit.nextAction && <p>Prochaine action : {visit.nextAction}{visit.nextActionAt ? ` · ${format(new Date(visit.nextActionAt), "dd/MM/yyyy HH:mm")}` : ""}</p>}</div>}
             </div>
             {(visit.status === "SCHEDULED" || visit.status === "COMPLETED") && <div className="mt-3 flex flex-wrap justify-end gap-1">{visit.status === "SCHEDULED" && <CompleteVisitDialog visitId={visit._id} />}<CancelVisitDialog visitId={visit._id} />{visit.status === "SCHEDULED" && <NoShowButton visitId={visit._id} />}</div>}
           </article>
@@ -163,7 +164,12 @@ export function VisitsList({ visits, showAgent = false, showClient = true }: Pro
               </TableCell>
               <TableCell>
                 {visit.outcome ? (
-                  <VisitOutcomeBadge outcome={visit.outcome} />
+                  <div className="space-y-1">
+                    <VisitOutcomeBadge outcome={visit.outcome} />
+                    {visit.interestLevel && <p className="text-xs text-muted-foreground">Intérêt {visit.interestLevel}/5</p>}
+                    {visit.clientFeedback && <p className="max-w-[240px] truncate text-xs" title={visit.clientFeedback}>{visit.clientFeedback}</p>}
+                    {visit.nextAction && <p className="max-w-[240px] truncate text-xs text-muted-foreground" title={visit.nextAction}>Suite : {visit.nextAction}</p>}
+                  </div>
                 ) : (
                   <span className="text-muted-foreground text-xs">—</span>
                 )}

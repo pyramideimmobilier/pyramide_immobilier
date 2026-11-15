@@ -9,6 +9,12 @@ export type PopulatedVisit = {
   isExternalListing: boolean;
   externalListingRef?: string;
   notes?: string;
+  interestLevel?: number;
+  clientFeedback?: string;
+  refusalReason?: string;
+  negotiable?: boolean;
+  nextAction?: string;
+  nextActionAt?: string | Date;
   completedAt?: string;
   cancelledAt?: string;
   createdAt?: string;
@@ -49,6 +55,12 @@ export type ScheduleVisitInput = {
 export type CompleteVisitInput = {
   visitId: string;
   outcome: VisitOutcome;
+  interestLevel: number;
+  clientFeedback: string;
+  refusalReason?: string;
+  negotiable: boolean;
+  nextAction: string;
+  nextActionAt: Date;
   notes?: string;
 };
 

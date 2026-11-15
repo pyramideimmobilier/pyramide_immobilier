@@ -17,6 +17,12 @@ export interface IVisit {
 
   outcome?: VisitOutcome;
   notes?: string;
+  interestLevel?: number;
+  clientFeedback?: string;
+  refusalReason?: string;
+  negotiable?: boolean;
+  nextAction?: string;
+  nextActionAt?: Date;
   calendarEventId?: Schema.Types.ObjectId;
   completedAt?: Date;
   cancelledAt?: Date;
@@ -43,6 +49,12 @@ const visitSchema = new Schema<IVisit>(
 
     outcome: { type: String, enum: ["INTERESTED", "NOT_INTERESTED", "UNDECIDED"] },
     notes: { type: String },
+    interestLevel: { type: Number, min: 1, max: 5 },
+    clientFeedback: { type: String, trim: true },
+    refusalReason: { type: String, trim: true },
+    negotiable: { type: Boolean },
+    nextAction: { type: String, trim: true },
+    nextActionAt: { type: Date },
     calendarEventId: { type: Schema.Types.ObjectId, ref: "CalendarEvent" },
     completedAt: { type: Date },
     cancelledAt: { type: Date },
