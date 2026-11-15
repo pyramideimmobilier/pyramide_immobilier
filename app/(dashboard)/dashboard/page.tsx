@@ -12,6 +12,7 @@ import { SectionCards } from "@/components/dashboard/CardsSection";
 import { DashboardCharts } from "@/components/dashboard/Charts";
 import { GET as getDashboardStats } from "@/app/api/dashboard/stats/route";
 import { PriorityOpportunities } from "@/components/dashboard/PriorityOpportunities";
+import { ManagerAnalytics } from "@/components/dashboard/ManagerAnalytics";
 
 async function getDashboardData() {
   const user = await getUserBySessionEmail();
@@ -173,6 +174,8 @@ async function DashboardContent() {
       </section>
 
       <PriorityOpportunities clients={priorityOpportunities?.clients ?? []} listings={priorityOpportunities?.listings ?? []} />
+
+      <ManagerAnalytics />
 
       <section className="grid items-start gap-6 xl:grid-cols-12">
         <div className="xl:col-span-8">
