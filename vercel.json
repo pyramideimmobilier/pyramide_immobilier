@@ -10,7 +10,7 @@
     },
     {
       "path": "/api/cron/no-response-follow-ups",
-      "schedule": "0 * * * *"
+      "schedule": "15 9 * * *"
     },
     {
       "path": "/api/cron/sync-calendar",
