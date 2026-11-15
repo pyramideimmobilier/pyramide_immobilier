@@ -488,7 +488,6 @@ export function ListingTable({
               <TableHead>Localisation</TableHead>
               <TableHead>Prix</TableHead>
               <TableHead>Specs</TableHead>
-              <TableHead><button onClick={handleSortByScore} className="flex items-center gap-1 hover:text-foreground">Intérêt <ArrowDownUp className="h-3 w-3" /></button></TableHead>
               <TableHead>Agent</TableHead>
               <TableHead className="w-[170px]">État</TableHead>
               <TableHead className="w-[140px]">Validation / ajout</TableHead>
@@ -697,6 +696,21 @@ export function ListingTable({
                       ) : (
                         <p className="text-yellow-600">À estimer</p>
                       )}
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleSortByScore();
+                        }}
+                        className="mt-1.5 flex items-center gap-1 text-left"
+                        title="Trier les biens par intérêt commercial"
+                      >
+                        <span className="text-[11px] font-normal text-muted-foreground">
+                          Intérêt
+                        </span>
+                        <CommercialScoreBadge score={listing.evaluation?.finalScore} />
+                        <ArrowDownUp className="h-3 w-3 text-muted-foreground" />
+                      </button>
                     </div>
                   </TableCell>
 
@@ -726,10 +740,6 @@ export function ListingTable({
                         </span>
                       </div>
                     </div>
-                  </TableCell>
-
-                  <TableCell>
-                    <CommercialScoreBadge score={listing.evaluation?.finalScore} />
                   </TableCell>
 
                   <TableCell onClick={(e) => e.stopPropagation()}>
