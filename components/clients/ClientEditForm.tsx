@@ -73,8 +73,9 @@ export default function ClientEditForm({ client }: ClientEditFormProps) {
   });
   const profileKind = form.watch("profileKind");
   useEffect(() => {
-    if (profileKind === "BROKER") form.setValue("type", "INTERMEDIARY");
-    else if (form.getValues("type") === "INTERMEDIARY") form.setValue("type", "BUYER");
+    if (profileKind === "BROKER" || form.getValues("type") === "INTERMEDIARY") {
+      form.setValue("type", "BUYER");
+    }
   }, [form, profileKind]);
 
   const onSubmit = async (values: ClientEditFormValues) => {

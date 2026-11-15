@@ -51,7 +51,7 @@ export const clientSchema = z.object({
   qualificationNotes: z.string().optional(),
   assignedAgent: z.string().optional(),
 }).superRefine((data, ctx) => {
-  if (data.profileKind === "BROKER" && data.type !== "INTERMEDIARY") ctx.addIssue({ code: "custom", path: ["type"], message: "Un courtier doit utiliser le profil courtier" });
+  if (data.profileKind === "BROKER" && data.type !== "BUYER") ctx.addIssue({ code: "custom", path: ["type"], message: "Un courtier utilise le type acheteur par défaut" });
   if (data.profileKind === "INDIVIDUAL" && data.type === "INTERMEDIARY") ctx.addIssue({ code: "custom", path: ["type"], message: "Sélectionnez le profil courtier" });
 });
 
@@ -104,7 +104,7 @@ export const updateClientSchema = z.object({
   qualificationNotes: z.string().optional(),
   assignedAgent: z.string().optional(),
 }).superRefine((data, ctx) => {
-  if (data.profileKind === "BROKER" && data.type !== "INTERMEDIARY") ctx.addIssue({ code: "custom", path: ["type"], message: "Un courtier doit utiliser le profil courtier" });
+  if (data.profileKind === "BROKER" && data.type !== "BUYER") ctx.addIssue({ code: "custom", path: ["type"], message: "Un courtier utilise le type acheteur par défaut" });
   if (data.profileKind === "INDIVIDUAL" && data.type === "INTERMEDIARY") ctx.addIssue({ code: "custom", path: ["type"], message: "Sélectionnez le profil courtier" });
 });
 

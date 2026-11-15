@@ -201,7 +201,7 @@ export default function ClientDetailPage({
             {client.firstName} {client.lastName}
           </h1>
           <Badge variant="outline">{client.referenceCode}</Badge>
-          <Badge>{TYPE_LABELS[client.type]}</Badge>
+          <Badge>{client.profileKind === "BROKER" ? "Courtier immobilier" : TYPE_LABELS[client.type]}</Badge>
           <Badge variant="outline">Source : {getLeadSourceLabel(client.leadSource)}{client.leadSourceDetails ? ` · ${client.leadSourceDetails}` : ""}</Badge>
           <Badge variant="secondary">{qualificationLabel}</Badge>
         </div>

@@ -333,7 +333,13 @@ export async function fetchClients(
       ];
     }
 
-    if (type) filter.type = type;
+    if (type === "INTERMEDIARY") {
+      filter.profileKind = "BROKER";
+      delete filter.type;
+    } else if (type) {
+      filter.type = type;
+      filter.profileKind = { $ne: "BROKER" };
+    }
     if (qualificationStatus) {
       if (
         qualificationStatus === "WARM" ||

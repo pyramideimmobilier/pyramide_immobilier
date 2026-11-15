@@ -49,6 +49,12 @@ const TYPE_COLORS: Record<string, "default" | "secondary" | "outline"> = {
   INTERMEDIARY: "outline",
 };
 
+const getClientTypeLabel = (client: Client) =>
+  client.profileKind === "BROKER" ? "Courtier immobilier" : TYPE_LABELS[client.type];
+
+const getClientTypeColor = (client: Client) =>
+  client.profileKind === "BROKER" ? "outline" as const : TYPE_COLORS[client.type];
+
 const PIPELINE_STATUS_LABELS: Record<string, string> = {
   NEUTRAL: "Neutre",
   NEW: "Nouveau",
@@ -154,7 +160,7 @@ export default function ClientsTable({
       </TableCell>
 
       <TableCell>
-        <div className="flex flex-col items-start gap-1"><Badge variant={TYPE_COLORS[client.type]}>{TYPE_LABELS[client.type]}</Badge><Badge variant="outline" className="text-[10px]">{getLeadSourceLabel(client.leadSource)}</Badge></div>
+        <div className="flex flex-col items-start gap-1"><Badge variant={getClientTypeColor(client)}>{getClientTypeLabel(client)}</Badge><Badge variant="outline" className="text-[10px]">{getLeadSourceLabel(client.leadSource)}</Badge></div>
       </TableCell>
 
       <TableCell onClick={(e) => e.stopPropagation()}>
@@ -268,7 +274,7 @@ export default function ClientsTable({
     <article key={client._id} className={`rounded-xl border p-3 shadow-sm ${client.hasPendingArchiveRequest ? "border-amber-200 bg-amber-50/60 dark:border-amber-900 dark:bg-amber-950/20" : "bg-card"}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-1.5"><Badge variant="outline">{client.referenceCode}</Badge><Badge variant={TYPE_COLORS[client.type]}>{TYPE_LABELS[client.type]}</Badge><Badge variant="outline">{getLeadSourceLabel(client.leadSource)}</Badge></div>
+          <div className="flex flex-wrap items-center gap-1.5"><Badge variant="outline">{client.referenceCode}</Badge><Badge variant={getClientTypeColor(client)}>{getClientTypeLabel(client)}</Badge><Badge variant="outline">{getLeadSourceLabel(client.leadSource)}</Badge></div>
           <p className="mt-2 truncate font-semibold">{[client.firstName, client.lastName].filter(Boolean).join(" ") || "Client"}</p>
           <div className="mt-1 text-sm"><PhoneActionLink phone={client.phone} />{client.email && <p className="truncate text-xs text-muted-foreground">{client.email}</p>}</div>
         </div>

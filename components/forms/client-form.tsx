@@ -86,11 +86,11 @@ export default function ClientCreateForm() {
   });
 
   const router = useRouter();
-  const selectedClientType = form.watch("type");
   const selectedProfileKind = form.watch("profileKind");
   useEffect(() => {
-    if (selectedProfileKind === "BROKER") form.setValue("type", "INTERMEDIARY");
-    else if (form.getValues("type") === "INTERMEDIARY") form.setValue("type", "BUYER");
+    if (selectedProfileKind === "BROKER" || form.getValues("type") === "INTERMEDIARY") {
+      form.setValue("type", "BUYER");
+    }
   }, [form, selectedProfileKind]);
   const onSubmit = async (values: ClientFormValues) => {
     const result = await createClient(values);
@@ -350,9 +350,9 @@ export default function ClientCreateForm() {
             />
             )}
 
-            {selectedClientType === "INTERMEDIARY" && (
+            {selectedProfileKind === "BROKER" && (
               <div className="rounded-lg border border-violet-200 bg-violet-50 p-3 text-sm text-violet-900 dark:border-violet-900 dark:bg-violet-950/30 dark:text-violet-100">
-                Cette fiche sera enregistrée comme courtier immobilier et restera distincte des clients particuliers.
+                Cette fiche sera enregistrée comme courtier immobilier avec le type acheteur par défaut.
               </div>
             )}
 
