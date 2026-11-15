@@ -38,6 +38,7 @@ import { cancelClientArchiveRequest } from "@/lib/actions/archiveRequest.action"
 import type { ClientDealDoneSummary } from "@/lib/actions/negotiation.action";
 import { SetBreadcrumbTitle } from "@/components/navigation/BreadcrumbTitleContext";
 import ClientEditForm from "./ClientEditForm";
+import { FastTrackButton } from "@/components/FastTrackButton";
 
 const TYPE_LABELS: Record<string, string> = {
   BUYER: "Acheteur",
@@ -206,6 +207,8 @@ export default function ClientDetailPage({
           <Badge variant="secondary">{qualificationLabel}</Badge>
         </div>
 
+        <div className="flex flex-wrap items-center gap-2">
+        {!client.archived && <FastTrackButton entityType="CLIENT" entityId={client._id} active={client.isFastTrack} initialReason={client.fastTrackReason} />}
         {client.archived ? (
           <Button
             variant="outline"
@@ -248,6 +251,7 @@ export default function ClientDetailPage({
             Archiver ce client
           </Button>
         )}
+        </div>
       </div>
 
       {/* Archived banner */}

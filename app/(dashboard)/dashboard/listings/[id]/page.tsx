@@ -16,6 +16,7 @@ import ROUTES from "@/constants/routes";
 import { DeleteListingButton } from "@/components/listing/DeleteListingButton";
 import { CopyClientListingLinkButton } from "@/components/listing/CopyClientListingLinkButton";
 import { SetBreadcrumbTitle } from "@/components/navigation/BreadcrumbTitleContext";
+import { FastTrackButton } from "@/components/FastTrackButton";
 
 export default async function ListingDetailsPage({
   params,
@@ -51,6 +52,7 @@ export default async function ListingDetailsPage({
       <ListingGallery images={listing.images} isStaff={true} />
 
       <div className="flex justify-end gap-2 mt-4">
+        <FastTrackButton entityType="LISTING" entityId={id} active={listing.isFastTrack} initialReason={listing.fastTrackReason} />
         <CopyClientListingLinkButton listingId={id} />
         <Button asChild variant="outline">
           <Link href={ROUTES.LISTING_EDIT(id)}>

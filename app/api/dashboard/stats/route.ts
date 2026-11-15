@@ -406,6 +406,31 @@ export async function GET() {
       updatedAt: { $gte: startOfDay, $lte: endOfDay },
     });
 
+    const [priorityClientsRaw, priorityListingsRaw] = await Promise.all([
+      Client.find({ ...clientFilter, isFastTrack: true })
+        .select("referenceCode firstName lastName fastTrackReason assignedAgent")
+        .populate("assignedAgent", "firstname lastname")
+        .sort({ fastTrackAt: -1 })
+        .limit(10)
+        .lean(),
+      Listing.find({ ...listingFilter, isFastTrack: true })
+        .select("referenceCode title fastTrackReason agent")
+        .populate("agent", "firstname lastname")
+        .sort({ fastTrackAt: -1 })
+        .limit(10)
+        .lean(),
+    ]);
+    const priorityOpportunities = {
+      clients: priorityClientsRaw.map((item) => {
+        const value = item as unknown as { _id: Types.ObjectId; referenceCode?: string; firstName?: string; lastName?: string; fastTrackReason?: string; assignedAgent?: { firstname?: string; lastname?: string } };
+        return { _id: value._id.toString(), referenceCode: value.referenceCode, label: [value.firstName, value.lastName].filter(Boolean).join(" ") || value.referenceCode || "Client", reason: value.fastTrackReason, agentName: value.assignedAgent ? [value.assignedAgent.firstname, value.assignedAgent.lastname].filter(Boolean).join(" ") : undefined };
+      }),
+      listings: priorityListingsRaw.map((item) => {
+        const value = item as unknown as { _id: Types.ObjectId; referenceCode?: string; title?: string; fastTrackReason?: string; agent?: { firstname?: string; lastname?: string } };
+        return { _id: value._id.toString(), referenceCode: value.referenceCode, label: value.referenceCode || value.title || "Bien", reason: value.fastTrackReason, agentName: value.agent ? [value.agent.firstname, value.agent.lastname].filter(Boolean).join(" ") : undefined };
+      }),
+    };
+
     // 7. Get recent activities (scoped by role)
     const [recentListings, recentClients, recentFollowUps, recentSales] =
       await Promise.all([
@@ -630,6 +655,7 @@ export async function GET() {
         },
         todayEvents: formattedTodayEvents,
         agentPerformance,
+        priorityOpportunities,
         recentActivities,
         charts: {
           salesData,

@@ -72,6 +72,10 @@ export interface IClient {
 
   // Inactivity tracking for HOT client alerts
   lastContactedAt?: Date;
+  isFastTrack: boolean;
+  fastTrackReason?: string;
+  fastTrackAt?: Date;
+  fastTrackBy?: Schema.Types.ObjectId;
 
   createdBy: Schema.Types.ObjectId;
   assignedAgent?: Schema.Types.ObjectId;
@@ -174,6 +178,10 @@ const clientSchema = new Schema<IClient>(
     phase2Notes: String,
 
     lastContactedAt: Date,
+    isFastTrack: { type: Boolean, default: false, index: true },
+    fastTrackReason: { type: String, trim: true },
+    fastTrackAt: Date,
+    fastTrackBy: { type: Schema.Types.ObjectId, ref: "User" },
 
     createdBy: {
       type: Schema.Types.ObjectId,

@@ -186,6 +186,9 @@ interface Listing {
   likes: number;
   isFeatured: boolean;
   isPremium: boolean;
+  isFastTrack?: boolean;
+  fastTrackReason?: string;
+  fastTrackAt?: string | Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -238,6 +241,9 @@ interface Client {
   phase2Agent?: string;
   phase2Notes?: string;
   lastContactedAt?: string | Date;
+  isFastTrack?: boolean;
+  fastTrackReason?: string;
+  fastTrackAt?: string | Date;
 
   createdBy: Schema.Types.ObjectId; // Agent / Assistant
   assignedAgent?: Schema.Types.ObjectId;

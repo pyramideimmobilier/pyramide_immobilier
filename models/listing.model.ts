@@ -143,6 +143,10 @@ export interface IListing {
   likes: number;
   isFeatured: boolean;
   isPremium: boolean;
+  isFastTrack: boolean;
+  fastTrackReason?: string;
+  fastTrackAt?: Date;
+  fastTrackBy?: Schema.Types.ObjectId;
 }
 
 /* ---------------------------------
@@ -323,6 +327,10 @@ const listingSchema = new Schema<IListing>(
     likes: { type: Number, default: 0 },
     isFeatured: { type: Boolean, default: false },
     isPremium: { type: Boolean, default: false },
+    isFastTrack: { type: Boolean, default: false, index: true },
+    fastTrackReason: { type: String, trim: true },
+    fastTrackAt: Date,
+    fastTrackBy: { type: Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );
