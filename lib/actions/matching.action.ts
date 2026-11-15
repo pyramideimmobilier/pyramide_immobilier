@@ -121,9 +121,13 @@ function scoreListing(listing: Listing, client: Client): number {
 
   if (
     client.rooms !== undefined &&
-    listing.features.bedrooms === client.rooms
+    (listing.features.roomCount ?? listing.features.bedrooms) === client.rooms
   ) {
     score += 3;
+  }
+
+  if (client.wantedLayoutNotation && listing.features.layoutNotation === client.wantedLayoutNotation) {
+    score += 1;
   }
 
   return score;
@@ -133,6 +137,7 @@ function scoreClient(
   client: Client & {
     wantedPropertyType?: string;
     rooms?: number;
+    wantedLayoutNotation?: "F" | "T";
     city?: string;
     budgetMin?: number;
     budgetMax?: number;
@@ -166,9 +171,14 @@ function scoreClient(
 
   if (
     client.rooms !== undefined &&
-    listing.features.bedrooms === client.rooms
+    (listing.features.roomCount ?? listing.features.bedrooms) === client.rooms
   ) {
     score += 3;
+  }
+
+
+  if (client.wantedLayoutNotation && listing.features.layoutNotation === client.wantedLayoutNotation) {
+    score += 1;
   }
 
   return score;
@@ -216,7 +226,7 @@ export async function matchClientToListings(
       archived: { $ne: true },
     })
       .select(
-        "referenceCode title propertyType status location price features.bedrooms features.area evaluation.finalScore isPublished images coverImage"
+        "referenceCode title propertyType status location price features.bedrooms features.roomCount features.layoutNotation features.area evaluation.finalScore isPublished images coverImage"
       )
       .lean<Listing[]>();
 
@@ -285,7 +295,7 @@ export async function matchListingToClients(
       assignedAgent: listing.agent,
     })
       .select(
-        "referenceCode firstName lastName type city wantedPropertyType rooms budgetMin budgetMax phone"
+        "referenceCode firstName lastName type city wantedPropertyType wantedLayoutNotation rooms budgetMin budgetMax phone"
       )
       .lean<Client[]>();
 

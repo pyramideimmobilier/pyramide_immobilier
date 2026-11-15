@@ -57,6 +57,7 @@ export default function ClientEditForm({ client }: ClientEditFormProps) {
       budgetMax: client.budgetMax,
       priceCurrency: client.priceCurrency || "DZD",
       wantedPropertyType: client.wantedPropertyType || "",
+      wantedLayoutNotation: client.wantedLayoutNotation,
       rooms: client.rooms,
       floorMin: client.floorMin,
       floorMax: client.floorMax,
@@ -131,7 +132,21 @@ export default function ClientEditForm({ client }: ClientEditFormProps) {
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <FormField
+            control={form.control}
+            name="wantedLayoutNotation"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Notation</FormLabel>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <FormControl><SelectTrigger><SelectValue placeholder="F ou T" /></SelectTrigger></FormControl>
+                  <SelectContent><SelectItem value="F">F</SelectItem><SelectItem value="T">T</SelectItem></SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="phone"
@@ -393,7 +408,7 @@ export default function ClientEditForm({ client }: ClientEditFormProps) {
             name="rooms"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nombre de pièces</FormLabel>
+                <FormLabel>Nombre de pièces {form.watch("wantedLayoutNotation") ? `(${form.watch("wantedLayoutNotation")}${field.value ?? ""})` : ""}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"

@@ -25,6 +25,7 @@ export type ClientInput = {
   priceCurrency?: "DZD" | "EUR" | "USD";
   wantedArea?: number;
   wantedPropertyType?: string;
+  wantedLayoutNotation?: "F" | "T";
   rooms?: number;
   floorMin?: number;
   floorMax?: number;
@@ -51,6 +52,7 @@ export type ClientUpdateInput = {
   priceCurrency?: "DZD" | "EUR" | "USD";
   wantedArea?: number;
   wantedPropertyType?: string;
+  wantedLayoutNotation?: "F" | "T";
   rooms?: number;
   floorMin?: number;
   floorMax?: number;

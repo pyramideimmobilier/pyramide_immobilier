@@ -43,6 +43,7 @@ export interface IClient {
   wantedArea?: number;
   city?: string;
   wantedPropertyType?: string;
+  wantedLayoutNotation?: "F" | "T";
   rooms?: number;
   floorMin?: number;
   floorMax?: number;
@@ -110,6 +111,7 @@ const clientSchema = new Schema<IClient>(
     wantedArea: Number,
     city: String,
     wantedPropertyType: String,
+    wantedLayoutNotation: { type: String, enum: ["F", "T"] },
     rooms: Number,
     floorMin: Number,
     floorMax: Number,

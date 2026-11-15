@@ -210,6 +210,7 @@ interface Client {
   wantedArea?: number;
   city?: string;
   wantedPropertyType?: string;
+  wantedLayoutNotation?: "F" | "T";
   rooms?: number;
   floorMin?: number;
   floorMax?: number;

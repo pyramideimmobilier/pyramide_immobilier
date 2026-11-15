@@ -73,6 +73,7 @@ export default function ClientCreateForm() {
       priceCurrency: "DZD",
       wantedArea: undefined,
       wantedPropertyType: "",
+      wantedLayoutNotation: undefined,
       rooms: undefined,
       floorMin: undefined,
       floorMax: undefined,
@@ -517,13 +518,34 @@ export default function ClientCreateForm() {
               }}
             />
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <FormField
+                control={form.control}
+                name="wantedLayoutNotation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Notation</FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="F ou T" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="F">F</SelectItem>
+                        <SelectItem value="T">T</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="rooms"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nombre de pièces</FormLabel>
+                    <FormLabel>Nombre de pièces {form.watch("wantedLayoutNotation") ? `(${form.watch("wantedLayoutNotation")}${field.value ?? ""})` : ""}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
