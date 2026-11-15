@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition, useState } from "react";
+import { useEffect, useTransition, useState } from "react";
 import dynamic from "next/dynamic";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -50,6 +50,7 @@ import ROUTES from "@/constants/routes";
 import { COUNTRY_CODES, type CountryId } from "@/lib/country-codes";
 import { formatPriceAlgeria } from "@/lib/utils";
 import { Textarea } from "../ui/textarea";
+import { generateListingTitle } from "@/lib/listing-title";
 
 // --- Types ---
 type ListingFormValues = z.infer<typeof listingSchema>;
@@ -196,6 +197,26 @@ export default function ListingForm({
   });
 
   const selectedPropertyType = form.watch("propertyType");
+  const propertyTypeCustom = form.watch("propertyTypeCustom");
+  const layoutNotation = form.watch("features.layoutNotation");
+  const roomCount = form.watch("features.roomCount");
+  const city = form.watch("location.city");
+  const district = form.watch("location.district");
+  const address = form.watch("location.address");
+
+  useEffect(() => {
+    if (isEditMode) return;
+    form.setValue(
+      "title",
+      generateListingTitle({
+        propertyType: selectedPropertyType,
+        propertyTypeCustom,
+        location: { city, district, address },
+        features: { layoutNotation, roomCount },
+      }),
+      { shouldValidate: true }
+    );
+  }, [address, city, district, form, isEditMode, layoutNotation, propertyTypeCustom, roomCount, selectedPropertyType]);
 
   const onSubmit = (data: ListingFormValues) => {
     startTransition(async () => {
@@ -261,10 +282,17 @@ export default function ListingForm({
                       <FormLabel>Titre</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Appartement F3 ou T3 à Oran"
+                          placeholder="Appartement F3 à Oran"
+                          readOnly={!isEditMode}
+                          className={!isEditMode ? "bg-muted" : undefined}
                           {...field}
                         />
                       </FormControl>
+                      {!isEditMode && (
+                        <FormDescription>
+                          Généré selon le type, le nombre de pièces et l&apos;adresse.
+                        </FormDescription>
+                      )}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -550,31 +578,23 @@ export default function ListingForm({
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={form.control}
-                      name="features.roomCount"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nombre de pièces</FormLabel>
-                          <FormControl>
-                            <Input type="number" min={1} max={20} {...field} />
-                          </FormControl>
-                          <FormDescription>
-                            Définit la typologie, par exemple F3 ou T3.
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </>
                 )}
                 <FormField
                   control={form.control}
-                  name="features.bedrooms"
+                  name="features.roomCount"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Chambres</FormLabel>
-                      <Input type="number" {...field} />
+                      <FormLabel>Nombre de pièces</FormLabel>
+                      <FormControl>
+                        <Input type="number" min={1} max={20} {...field} />
+                      </FormControl>
+                      {selectedPropertyType === "Appartement" && (
+                        <FormDescription>
+                          Définit la typologie, par exemple F3 ou T3.
+                        </FormDescription>
+                      )}
+                      <FormMessage />
                     </FormItem>
                   )}
                 />

@@ -35,6 +35,7 @@ import {
 import ROUTES from "@/constants/routes";
 import { clientPrefix, formatPriceAlgeria } from "../utils";
 import { buildPhoneKeys, phoneSearchVariants } from "../phone";
+import { generateListingTitle } from "../listing-title";
 
 function getListingReferencePrefix(status: string): "V" | "L" {
   return status === "En Location" || status === "Loué" ? "L" : "V";
@@ -170,9 +171,14 @@ function buildListingDescription(
 export async function createListing(
   params: ListingInput
 ): Promise<ActionResponse<Listing>> {
+  const creationParams = {
+    ...params,
+    title: generateListingTitle(params),
+  };
+
   // 1. Validation + Authorization
   const validationResult = await action({
-    params,
+    params: creationParams,
     schema: listingCreateSchema,
     authorize: true,
   });
