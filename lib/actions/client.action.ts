@@ -1,6 +1,6 @@
 "use server";
 
-import { ArchiveRequest, Client, ReferenceCounter, User } from "@/models";
+import { ArchiveRequest, Client, FollowUp, ReferenceCounter, User } from "@/models";
 import {
   IClient,
   PipelineStage,
@@ -901,6 +901,9 @@ export async function updateClient(
       };
     }
 
+    const existingClient = await Client.findById(clientId)
+      .select("qualificationStatus clientTemperature assignedAgent createdBy firstName lastName referenceCode")
+      .lean<IClient>();
     const qualificationStatus = validationResult.params?.qualificationStatus;
     const phoneKeys = buildPhoneKeys(validationResult.params?.phone, validationResult.params?.phone2);
     const duplicate = await findClientWithPhone(phoneKeys, clientId);
@@ -952,6 +955,48 @@ export async function updateClient(
         error: { message: "Client introuvable" },
         status: 404,
       };
+    }
+
+    const clientRecord = client as unknown as {
+      assignedAgent?: { _id?: Types.ObjectId } | Types.ObjectId;
+      createdBy?: { _id?: Types.ObjectId } | Types.ObjectId;
+      firstName?: string;
+      lastName?: string;
+      referenceCode: string;
+    };
+    const assignedAgent = clientRecord.assignedAgent;
+    const createdBy = clientRecord.createdBy;
+    const responsibleId = (assignedAgent && "_id" in assignedAgent ? assignedAgent._id : assignedAgent)?.toString() ?? (createdBy && "_id" in createdBy ? createdBy._id : createdBy)?.toString();
+    const clientName = [clientRecord.firstName, clientRecord.lastName].filter(Boolean).join(" ") || clientRecord.referenceCode;
+
+    if (qualificationStatus === "NO_RESPONSE" && responsibleId) {
+      const existingReminder = await FollowUp.findOne({
+        client: clientId,
+        status: "PENDING",
+        title: { $regex: "^Relance automatique - client injoignable" },
+      }).lean();
+      if (!existingReminder) {
+        const reminderAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
+        await FollowUp.create({
+          client: clientId,
+          agent: responsibleId,
+          type: "CUSTOM",
+          context: "CLIENT",
+          title: "Relance automatique - client injoignable",
+          note: "Nouvelle tentative programmée automatiquement après 48 heures.",
+          reminderAt,
+          channel: "CALL",
+          status: "PENDING",
+        });
+        await notify({ recipientId: responsibleId, type: "CLIENT_NO_RESPONSE", title: "Relance client programmée", body: `${clientName} est injoignable. Une nouvelle tentative a été programmée dans 48 heures.`, link: ROUTES.CLIENT_DETAIL(clientId), relatedEntity: { type: "CLIENT", id: clientId } });
+      }
+    }
+
+    const becameHot = qualificationStatus === "HOT" && existingClient?.qualificationStatus !== "HOT" && existingClient?.clientTemperature !== "HOT";
+    if (becameHot) {
+      const notification = { type: "HOT_CLIENT_PRIORITY" as const, title: "Nouveau client chaud prioritaire", body: `${clientName} vient d’être classé chaud et doit être pris en charge rapidement.`, link: ROUTES.CLIENT_DETAIL(clientId), relatedEntity: { type: "CLIENT" as const, id: clientId } };
+      if (responsibleId) await notify({ recipientId: responsibleId, ...notification });
+      await notifyManagers(notification);
     }
 
     revalidatePath(ROUTES.CLIENTS_DASHBOARD);
