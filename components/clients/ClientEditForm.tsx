@@ -50,6 +50,7 @@ export default function ClientEditForm({ client }: ClientEditFormProps) {
       firstName: client.firstName,
       lastName: client.lastName,
       phone: client.phone,
+      phone2: client.phone2 || "",
       email: client.email || "",
       city: client.city || "",
       budgetMin: client.budgetMin,
@@ -147,18 +148,32 @@ export default function ClientEditForm({ client }: ClientEditFormProps) {
 
           <FormField
             control={form.control}
-            name="email"
+            name="phone2"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Téléphone 2</FormLabel>
                 <FormControl>
-                  <Input placeholder="Email (optionnel)" {...field} />
+                  <Input placeholder="Téléphone secondaire (optionnel)" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="Email (optionnel)" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {profileKind === "INDIVIDUAL" && <FormField
