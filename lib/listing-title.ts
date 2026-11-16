@@ -9,6 +9,7 @@ type ListingTitleInput = {
   features?: {
     layoutNotation?: "F" | "T";
     roomCount?: number;
+    furnished?: boolean;
   };
 };
 
@@ -21,10 +22,16 @@ export function generateListingTitle(input: ListingTitleInput): string {
     input.propertyType === "Appartement" && input.features?.roomCount
       ? ` ${input.features.layoutNotation ?? "F"}${input.features.roomCount}`
       : "";
+  const femininePropertyTypes = ["Villa", "Maison"];
+  const furnished = input.features?.furnished
+    ? femininePropertyTypes.includes(input.propertyType)
+      ? " équipée"
+      : " équipé"
+    : "";
   const location =
     input.location?.district?.trim() ||
     input.location?.address?.trim() ||
     input.location?.city?.trim();
 
-  return `${propertyType}${layout}${location ? ` à ${location}` : ""}`;
+  return `${propertyType}${layout}${furnished}${location ? ` à ${location}` : ""}`;
 }

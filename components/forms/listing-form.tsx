@@ -200,6 +200,7 @@ export default function ListingForm({
   const propertyTypeCustom = form.watch("propertyTypeCustom");
   const layoutNotation = form.watch("features.layoutNotation");
   const roomCount = form.watch("features.roomCount");
+  const furnished = form.watch("features.furnished");
   const city = form.watch("location.city");
   const district = form.watch("location.district");
   const address = form.watch("location.address");
@@ -212,11 +213,11 @@ export default function ListingForm({
         propertyType: selectedPropertyType,
         propertyTypeCustom,
         location: { city, district, address },
-        features: { layoutNotation, roomCount },
+        features: { layoutNotation, roomCount, furnished },
       }),
       { shouldValidate: true }
     );
-  }, [address, city, district, form, isEditMode, layoutNotation, propertyTypeCustom, roomCount, selectedPropertyType]);
+  }, [address, city, district, form, furnished, isEditMode, layoutNotation, propertyTypeCustom, roomCount, selectedPropertyType]);
 
   const onSubmit = (data: ListingFormValues) => {
     startTransition(async () => {
