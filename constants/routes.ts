@@ -37,6 +37,7 @@ const ROUTES = {
   USER_DETAIL: (id: string) => `/dashboard/users/${id}`,
   // Messages
   MESSAGES: "/dashboard/messages",
+  NOTIFICATIONS: "/dashboard/notifications",
   // Schedule & Planning
   SCHEDULE: "/dashboard/schedule",
   SCHEDULE_TODAY: "/dashboard/schedule?view=today",

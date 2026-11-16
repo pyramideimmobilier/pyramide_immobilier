@@ -21,6 +21,7 @@ import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import ROUTES from "@/constants/routes";
 
 export function NotificationBell() {
   const [open, setOpen] = useState(false);
@@ -115,13 +116,14 @@ export function NotificationBell() {
           )}
         </ScrollArea>
 
-        {unreadCount > 8 && (
-          <div className="border-t px-4 py-2 text-center">
-            <span className="text-xs text-muted-foreground">
-              +{unreadCount - 8} autres notifications non lues
-            </span>
-          </div>
-        )}
+        <div className="border-t p-2">
+          <Button asChild variant="ghost" size="sm" className="w-full text-xs">
+            <Link href={ROUTES.NOTIFICATIONS} onClick={() => setOpen(false)}>
+              Voir toutes les notifications
+              {unreadCount > 8 && ` (+${unreadCount - 8} non lues)`}
+            </Link>
+          </Button>
+        </div>
       </PopoverContent>
     </Popover>
   );

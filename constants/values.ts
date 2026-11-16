@@ -126,6 +126,7 @@ export const routeTitles: Record<string, string> = {
 
   // === Admin / Dashboard ===
   "/dashboard": "Tableau de Bord",
+  "/dashboard/notifications": "Notifications",
 
   // === Dashboard Main Sections ===
   "/dashboard/schedule": "Planning",
