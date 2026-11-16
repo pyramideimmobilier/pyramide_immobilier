@@ -8,7 +8,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { requestArchive, cancelListingArchiveRequest } from "@/lib/actions/archiveRequest.action";
+import {
+  requestArchive,
+  cancelListingArchiveRequest,
+} from "@/lib/actions/archiveRequest.action";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -125,15 +128,26 @@ function hasNegotiationPipeline(listing: Listing) {
 
 function CommercialScoreBadge({ score }: { score?: number }) {
   if (score === undefined) {
-    return <Badge variant="outline" className="text-xs text-muted-foreground">Non noté</Badge>;
+    return (
+      <Badge variant="outline" className="text-xs text-muted-foreground">
+        Non noté
+      </Badge>
+    );
   }
-  const className = score >= 8
-    ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-    : score >= 5
-      ? "border-amber-300 bg-amber-50 text-amber-700"
-      : "border-red-300 bg-red-50 text-red-700";
-  const label = score >= 8 ? "Attractif" : score >= 5 ? "Standard" : "Faible potentiel";
-  return <Badge variant="outline" className={`gap-1 text-xs ${className}`}><Star className="h-3 w-3" />{score}/10 · {label}</Badge>;
+  const className =
+    score >= 8
+      ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+      : score >= 5
+        ? "border-amber-300 bg-amber-50 text-amber-700"
+        : "border-red-300 bg-red-50 text-red-700";
+  const label =
+    score >= 8 ? "Attractif" : score >= 5 ? "Standard" : "Faible potentiel";
+  return (
+    <Badge variant="outline" className={`gap-1 text-xs ${className}`}>
+      <Star className="h-3 w-3" />
+      {score}/10 · {label}
+    </Badge>
+  );
 }
 
 export function ListingTable({
@@ -262,12 +276,18 @@ export function ListingTable({
         <div className="flex items-center gap-2 rounded-md border px-2.5 py-1.5">
           <Switch
             checked={listing.isPublished}
-            onCheckedChange={() => openConfirmDialog(listing._id, listing.isPublished)}
+            onCheckedChange={() =>
+              openConfirmDialog(listing._id, listing.isPublished)
+            }
             disabled={publishingStates[listing._id]}
             aria-label={listing.isPublished ? "Dépublier" : "Publier"}
           />
           <span className="text-xs text-muted-foreground">
-            {listing.isPublished ? "Publié" : listing.publicationRequested ? "À publier" : "Non publié"}
+            {listing.isPublished
+              ? "Publié"
+              : listing.publicationRequested
+                ? "À publier"
+                : "Non publié"}
           </span>
         </div>
       );
@@ -279,7 +299,9 @@ export function ListingTable({
       listing.agent?._id === currentUserId
     ) {
       return listing.publicationRequested ? (
-        <Badge variant="outline" className="border-amber-300 text-amber-700">À publier</Badge>
+        <Badge variant="outline" className="border-amber-300 text-amber-700">
+          À publier
+        </Badge>
       ) : (
         <Button
           size="sm"
@@ -287,13 +309,19 @@ export function ListingTable({
           disabled={publishingStates[listing._id]}
           onClick={() => void handleRequestPublication(listing._id)}
         >
-          {publishingStates[listing._id] && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+          {publishingStates[listing._id] && (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          )}
           Marquer « À publier »
         </Button>
       );
     }
 
-    return <Badge variant="outline">{listing.isPublished ? "Publié" : "Non publié"}</Badge>;
+    return (
+      <Badge variant="outline">
+        {listing.isPublished ? "Publié" : "Non publié"}
+      </Badge>
+    );
   };
 
   const openConfirmDialog = (listingId: string, currentStatus: boolean) => {
@@ -334,16 +362,26 @@ export function ListingTable({
   };
 
   const handleConfirmArchive = async () => {
-    if (!archiveDialog || (!canArchiveDirectly && archiveReason.trim().length < 5)) return;
+    if (
+      !archiveDialog ||
+      (!canArchiveDirectly && archiveReason.trim().length < 5)
+    )
+      return;
     const { listingId } = archiveDialog;
     setValidatingStates((prev) => ({ ...prev, [listingId]: true }));
     const result = await requestArchive({
       entityType: "LISTING",
       entityId: listingId,
-      reason: canArchiveDirectly ? "Archivage direct par l’administrateur" : archiveReason.trim(),
+      reason: canArchiveDirectly
+        ? "Archivage direct par l’administrateur"
+        : archiveReason.trim(),
     });
     if (result.success) {
-      toast.success(result.status === 200 ? "Annonce archivée" : "Demande d’archivage envoyée");
+      toast.success(
+        result.status === 200
+          ? "Annonce archivée"
+          : "Demande d’archivage envoyée"
+      );
       setArchiveDialog(null);
       setArchiveReason("");
       router.refresh();
@@ -365,12 +403,24 @@ export function ListingTable({
     setValidatingStates((prev) => ({ ...prev, [listingId]: false }));
   };
 
-  const renderArchivePending = (listing: Listing) => listing.hasPendingArchiveRequest ? (
-    <div className="flex flex-wrap items-center gap-2">
-      <Badge variant="outline" className="border-amber-300 text-amber-700">Archivage en attente</Badge>
-      {listing.canCancelPendingArchiveRequest && <Button size="sm" variant="outline" disabled={validatingStates[listing._id]} onClick={() => handleCancelArchive(listing._id)}>Annuler la demande</Button>}
-    </div>
-  ) : null;
+  const renderArchivePending = (listing: Listing) =>
+    listing.hasPendingArchiveRequest ? (
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge variant="outline" className="border-amber-300 text-amber-700">
+          Archivage en attente
+        </Badge>
+        {listing.canCancelPendingArchiveRequest && (
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={validatingStates[listing._id]}
+            onClick={() => handleCancelArchive(listing._id)}
+          >
+            Annuler la demande
+          </Button>
+        )}
+      </div>
+    ) : null;
 
   const renderValidationMenu = (listing: Listing) => {
     const vState = getValidationState(listing);
@@ -379,15 +429,48 @@ export function ListingTable({
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-9 w-9" disabled={isLoading} aria-label="Actions de validation">
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreHorizontal className="h-5 w-5" />}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9"
+            disabled={isLoading}
+            aria-label="Actions de validation"
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <MoreHorizontal className="h-5 w-5" />
+            )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem disabled={vState === "validé"} onClick={() => handleValidate(listing._id)}>Valider</DropdownMenuItem>
-          <DropdownMenuItem disabled={vState === "validé" || vState === "approuvé"} onClick={() => handleApprove(listing._id)}>Approuver</DropdownMenuItem>
-          <DropdownMenuItem disabled={vState === "neutre"} onClick={() => handleSetNeutre(listing._id)}>Mettre en Neutre</DropdownMenuItem>
-          <DropdownMenuItem disabled={vState === "archivé" || listing.hasPendingArchiveRequest} className="text-destructive focus:text-destructive" onClick={() => setArchiveDialog({ open: true, listingId: listing._id })}>Archiver</DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={vState === "validé"}
+            onClick={() => handleValidate(listing._id)}
+          >
+            Valider
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={vState === "validé" || vState === "approuvé"}
+            onClick={() => handleApprove(listing._id)}
+          >
+            Approuver
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={vState === "neutre"}
+            onClick={() => handleSetNeutre(listing._id)}
+          >
+            Mettre en Neutre
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={vState === "archivé" || listing.hasPendingArchiveRequest}
+            className="text-destructive focus:text-destructive"
+            onClick={() =>
+              setArchiveDialog({ open: true, listingId: listing._id })
+            }
+          >
+            Archiver
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     );
@@ -398,24 +481,58 @@ export function ListingTable({
       <CardContent className="p-3 md:hidden">
         <div className="space-y-3">
           <div className="flex flex-wrap gap-1">
-            <Button variant="ghost" size="sm" className="h-8 gap-1 px-2 text-xs text-muted-foreground" onClick={handleSortByRef}>Trier par référence <RefSortIcon className="h-3.5 w-3.5" /></Button>
-            <Button variant="ghost" size="sm" className="h-8 gap-1 px-2 text-xs text-muted-foreground" onClick={handleSortByScore}>Trier par note <Star className="h-3.5 w-3.5" /></Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 gap-1 px-2 text-xs text-muted-foreground"
+              onClick={handleSortByRef}
+            >
+              Trier par référence <RefSortIcon className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 gap-1 px-2 text-xs text-muted-foreground"
+              onClick={handleSortByScore}
+            >
+              Trier par note <Star className="h-3.5 w-3.5" />
+            </Button>
           </div>
           {listings.map((listing) => {
             const vState = getValidationState(listing);
             const documentsCount = listing.documents?.length ?? 0;
             return (
-              <article key={listing._id} className="rounded-xl border bg-card p-3 shadow-sm">
+              <article
+                key={listing._id}
+                className="rounded-xl border bg-card p-3 shadow-sm"
+              >
                 <div className="flex gap-3">
-                  <Image src={listing?.images?.[0]?.url || "/placeholder.png"} alt={listing.title || "Image du bien"} width={80} height={72} className="h-[72px] w-20 shrink-0 rounded-lg object-cover" />
+                  <Image
+                    src={listing?.images?.[0]?.url || "/placeholder.png"}
+                    alt={listing.title || "Image du bien"}
+                    width={80}
+                    height={72}
+                    className="h-[72px] w-20 shrink-0 rounded-lg object-cover"
+                  />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-1.5">
-                          {listing.referenceCode && <Badge variant="outline" className="font-mono text-[11px]">{listing.referenceCode}</Badge>}
-                          <Badge variant="default" className="text-[11px]">{listing.propertyTypeCustom || listing.propertyType}</Badge>
+                          {listing.referenceCode && (
+                            <Badge
+                              variant="outline"
+                              className="font-mono text-[11px]"
+                            >
+                              {listing.referenceCode}
+                            </Badge>
+                          )}
+                          <Badge variant="default" className="text-[11px]">
+                            {listing.propertyTypeCustom || listing.propertyType}
+                          </Badge>
                         </div>
-                        <p className="mt-1 truncate text-sm font-semibold">{listing.title || "Bien immobilier"}</p>
+                        <p className="mt-1 truncate text-sm font-semibold">
+                          {listing.title || "Bien immobilier"}
+                        </p>
                       </div>
                       {renderValidationMenu(listing)}
                     </div>
@@ -426,21 +543,51 @@ export function ListingTable({
                       onClick={(e) => e.stopPropagation()}
                       className="mt-1 flex items-center gap-1 truncate text-xs text-muted-foreground hover:text-primary hover:underline"
                     >
-                      <MapPin className="h-3 w-3 shrink-0" />{listing.location.city || "Localisation non renseignée"}
+                      <MapPin className="h-3 w-3 shrink-0" />
+                      {listing.location.city || "Localisation non renseignée"}
                     </a>
                   </div>
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-2 rounded-lg bg-muted/40 p-2.5 text-sm">
-                  <div><p className="text-[11px] text-muted-foreground">Prix</p><p className="font-semibold">{listing.price ? formatPriceAlgeria(listing.price) : "À estimer"}</p></div>
-                  <div><p className="text-[11px] text-muted-foreground">Surface</p><p className="font-semibold">{listing.features.area || "—"} m²</p></div>
+                  <div>
+                    <p className="text-[11px] text-muted-foreground">Prix</p>
+                    <p className="font-semibold">
+                      {listing.price
+                        ? formatPriceAlgeria(listing.price)
+                        : "À estimer"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] text-muted-foreground">Surface</p>
+                    <p className="font-semibold">
+                      {listing.features.area || "—"} m²
+                    </p>
+                  </div>
                 </div>
                 <div className="mt-3 flex flex-wrap items-center gap-1.5">
                   <ValidationBadge state={vState} />
                   {renderArchivePending(listing)}
-                  <Badge variant="outline" className={STATUS_COLORS[listing.status]}>{listing.status}</Badge>
-                  <CommercialScoreBadge score={listing.evaluation?.finalScore} />
-                  {hasNegotiationPipeline(listing) && <Badge variant="purple" className="text-xs"><Radio className="h-3 w-3" />Négociation</Badge>}
-                  {documentsCount > 0 && <Badge variant="outline" className="gap-1 text-xs"><FileText className="h-3 w-3" />{documentsCount}</Badge>}
+                  <Badge
+                    variant="outline"
+                    className={STATUS_COLORS[listing.status]}
+                  >
+                    {listing.status}
+                  </Badge>
+                  <CommercialScoreBadge
+                    score={listing.evaluation?.finalScore}
+                  />
+                  {hasNegotiationPipeline(listing) && (
+                    <Badge variant="purple" className="text-xs">
+                      <Radio className="h-3 w-3" />
+                      Négociation
+                    </Badge>
+                  )}
+                  {documentsCount > 0 && (
+                    <Badge variant="outline" className="gap-1 text-xs">
+                      <FileText className="h-3 w-3" />
+                      {documentsCount}
+                    </Badge>
+                  )}
                 </div>
                 {listing.createdAt && (
                   <p className="mt-2 text-xs text-muted-foreground">
@@ -448,7 +595,18 @@ export function ListingTable({
                   </p>
                 )}
                 <div className="mt-3 flex items-center gap-2 border-t pt-3">
-                  <Button className="flex-1" size="sm" onClick={() => window.open(ROUTES.LISTING_DETAIL_DASHBOARD(listing._id), "_blank")}>Ouvrir le bien</Button>
+                  <Button
+                    className="flex-1"
+                    size="sm"
+                    onClick={() =>
+                      window.open(
+                        ROUTES.LISTING_DETAIL_DASHBOARD(listing._id),
+                        "_blank"
+                      )
+                    }
+                  >
+                    Ouvrir le bien
+                  </Button>
                   {renderPublicationControl(listing) && (
                     <div onClick={(e) => e.stopPropagation()}>
                       {renderPublicationControl(listing)}
@@ -457,10 +615,15 @@ export function ListingTable({
                 </div>
                 <div className="mt-2" onClick={(e) => e.stopPropagation()}>
                   {canAssignAgent ? (
-                    <ListingAgentSelect listingId={listing._id} agents={agents} value={listing.agent?._id} />
+                    <ListingAgentSelect
+                      listingId={listing._id}
+                      agents={agents}
+                      value={listing.agent?._id}
+                    />
                   ) : (
                     <p className="text-xs text-muted-foreground">
-                      Responsable : {listing.agent
+                      Responsable :{" "}
+                      {listing.agent
                         ? `${listing.agent.firstname ?? ""} ${listing.agent.lastname ?? ""}`.trim()
                         : "Non affecté"}
                     </p>
@@ -541,7 +704,13 @@ export function ListingTable({
                                 <Loader2 className="h-3 w-3 animate-spin" />
                               ) : (
                                 <>
-                                  {listing.hasPendingArchiveRequest ? <Badge variant="outline">Archivage en attente</Badge> : <ValidationBadge state={vState} />}
+                                  {listing.hasPendingArchiveRequest ? (
+                                    <Badge variant="outline">
+                                      Archivage en attente
+                                    </Badge>
+                                  ) : (
+                                    <ValidationBadge state={vState} />
+                                  )}
                                   <ChevronDown className="h-3 w-3 text-muted-foreground" />
                                 </>
                               )}
@@ -578,9 +747,19 @@ export function ListingTable({
                             </Badge>
                             Mettre en Neutre
                           </DropdownMenuItem>
-                          {listing.hasPendingArchiveRequest && <DropdownMenuItem disabled={!listing.canCancelPendingArchiveRequest} onClick={() => handleCancelArchive(listing._id)}>Annuler la demande d’archivage</DropdownMenuItem>}
+                          {listing.hasPendingArchiveRequest && (
+                            <DropdownMenuItem
+                              disabled={!listing.canCancelPendingArchiveRequest}
+                              onClick={() => handleCancelArchive(listing._id)}
+                            >
+                              Annuler la demande d’archivage
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuItem
-                            disabled={vState === "archivé" || listing.hasPendingArchiveRequest}
+                            disabled={
+                              vState === "archivé" ||
+                              listing.hasPendingArchiveRequest
+                            }
                             className="text-destructive focus:text-destructive"
                             onClick={() =>
                               setArchiveDialog({
@@ -648,7 +827,7 @@ export function ListingTable({
                                 ? listing.features.roomCount
                                 : listing.features.bedrooms
                                   ? listing.features.bedrooms
-                                : "?"}
+                                  : "?"}
                             </Badge>
                             {listing.features.etage && (
                               <p className="text-xs text-muted-foreground">
@@ -705,10 +884,9 @@ export function ListingTable({
                         className="mt-1.5 flex items-center gap-1 text-left"
                         title="Trier les biens par intérêt commercial"
                       >
-                        <span className="text-[11px] font-normal text-muted-foreground">
-                          Intérêt
-                        </span>
-                        <CommercialScoreBadge score={listing.evaluation?.finalScore} />
+                        <CommercialScoreBadge
+                          score={listing.evaluation?.finalScore}
+                        />
                         <ArrowDownUp className="h-3 w-3 text-muted-foreground" />
                       </button>
                     </div>
@@ -779,7 +957,7 @@ export function ListingTable({
                           ? formatDate(listing.validatedAt)
                           : listing.createdAt
                             ? formatDate(listing.createdAt)
-                          : "-"}
+                            : "-"}
                       </p>
                       {listing.validatedAt && listing.createdAt && (
                         <p className="text-xs text-muted-foreground">
@@ -834,7 +1012,12 @@ export function ListingTable({
       {/* Archive confirm dialog */}
       <AlertDialog
         open={archiveDialog?.open || false}
-        onOpenChange={(open) => { if (!open && !validatingStates[archiveDialog?.listingId || ""]) { setArchiveDialog(null); setArchiveReason(""); } }}
+        onOpenChange={(open) => {
+          if (!open && !validatingStates[archiveDialog?.listingId || ""]) {
+            setArchiveDialog(null);
+            setArchiveReason("");
+          }
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -845,14 +1028,34 @@ export function ListingTable({
                 : "Indiquez la raison de l’archivage. L’annonce restera active jusqu’à l’approbation de la demande par un responsable."}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          {!canArchiveDirectly && <div className="space-y-2">
-            <Label htmlFor="listing-archive-reason">Raison d’archivage</Label>
-            <Textarea id="listing-archive-reason" value={archiveReason} onChange={(event) => setArchiveReason(event.target.value)} placeholder="Au moins 5 caractères" />
-          </div>}
+          {!canArchiveDirectly && (
+            <div className="space-y-2">
+              <Label htmlFor="listing-archive-reason">Raison d’archivage</Label>
+              <Textarea
+                id="listing-archive-reason"
+                value={archiveReason}
+                onChange={(event) => setArchiveReason(event.target.value)}
+                placeholder="Au moins 5 caractères"
+              />
+            </div>
+          )}
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={validatingStates[archiveDialog?.listingId || ""]}>Annuler</AlertDialogCancel>
-            <Button variant="destructive" onClick={handleConfirmArchive} disabled={(!canArchiveDirectly && archiveReason.trim().length < 5) || validatingStates[archiveDialog?.listingId || ""]}>
-              {canArchiveDirectly ? "Confirmer l’archivage" : "Envoyer la demande"}
+            <AlertDialogCancel
+              disabled={validatingStates[archiveDialog?.listingId || ""]}
+            >
+              Annuler
+            </AlertDialogCancel>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmArchive}
+              disabled={
+                (!canArchiveDirectly && archiveReason.trim().length < 5) ||
+                validatingStates[archiveDialog?.listingId || ""]
+              }
+            >
+              {canArchiveDirectly
+                ? "Confirmer l’archivage"
+                : "Envoyer la demande"}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
